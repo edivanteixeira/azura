@@ -877,7 +877,7 @@ impl App {
                     let id = b.id;
                     let name = b.definition.name.clone();
                     self.build_id = id;
-                    self.log_title = format!("{name} #{id} · log do passo que falhou");
+                    self.log_title = format!("{name} #{id} · log of the step that failed");
                     self.go(
                         move |c| async move {
                             let tl = c.timeline(id).await?;

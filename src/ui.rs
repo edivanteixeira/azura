@@ -652,7 +652,7 @@ fn modal(f: &mut Frame, area: Rect, m: &Modal) {
                 .iter()
                 .map(|l| Line::from(Span::raw(format!("  {l}"))))
                 .collect::<Vec<_>>(),
-            "y confirma · qualquer outra tecla cancela",
+            "y confirms · any other key cancels",
         ),
         Modal::Input { title, value, .. } => (
             title.clone(),
@@ -660,7 +660,7 @@ fn modal(f: &mut Frame, area: Rect, m: &Modal) {
                 format!("  {value}▌"),
                 Style::new().fg(ACCENT),
             ))],
-            "enter confirma · esc cancela",
+            "enter confirms · esc cancels",
         ),
         Modal::Select {
             title, labels, sel, ..
@@ -680,7 +680,7 @@ fn modal(f: &mut Frame, area: Rect, m: &Modal) {
                     ))
                 })
                 .collect(),
-            "j/k escolhe · enter confirma · esc cancela",
+            "j/k picks · enter confirms · esc cancels",
         ),
     };
     lines.push(Line::from(""));
@@ -804,7 +804,7 @@ mod tests {
             for m in [
                 Modal::Confirm {
                     title: "t".into(),
-                    lines: vec!["linha".into()],
+                    lines: vec!["line".into()],
                     action: Action::CancelBuild(1),
                 },
                 Modal::Input {

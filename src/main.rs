@@ -13,11 +13,37 @@ use futures::StreamExt;
 use std::sync::Arc;
 use std::time::Duration;
 
+const USAGE: &str = "\
+azura — Azure DevOps pull requests, pipelines and releases in your terminal
+
+Usage:
+  azura              open the TUI
+  azura setup        reconfigure organization, project and token
+  azura --dry-run    never send writes, just describe them
+
+Flags:
+  -n, --dry-run      describe every write instead of sending it
+  -V, --version      print the version and exit
+  -h, --help         print this help and exit
+
+Config  ~/.config/azura/config.toml, or AZDO_ORG / AZDO_PROJECT / AZDO_PAT
+Keys    press ? inside the app
+";
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
     let dry_run = args.iter().any(|a| a == "--dry-run" || a == "-n");
     let force_setup = args.iter().any(|a| a == "setup" || a == "--setup");
+
+    if args.iter().any(|a| a == "--version" || a == "-V") {
+        println!("azura {}", env!("CARGO_PKG_VERSION"));
+        return Ok(());
+    }
+    if args.iter().any(|a| a == "--help" || a == "-h") {
+        print!("{USAGE}");
+        return Ok(());
+    }
 
     let mut cfg = config::Config::load();
     let mut terminal = ratatui::init();

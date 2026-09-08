@@ -657,9 +657,9 @@ mod live {
             let tl = c
                 .timeline(rodando.id)
                 .await
-                .expect("timeline de build em execução");
+                .expect("timeline of a running build");
             println!(
-                "running build   {} #{} · {} passos",
+                "running build   {} #{} · {} steps",
                 rodando.definition.name,
                 rodando.id,
                 tl.len()

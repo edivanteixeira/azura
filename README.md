@@ -40,7 +40,8 @@ Create the PAT under **Azure DevOps → User settings → Personal access tokens
 | Build (read & execute) | list runs and logs, queue, cancel |
 | Release (read, write, execute & manage) | approve, reject and promote stages |
 
-To switch project or token later: `azura setup`.
+To switch project or token later: `azura setup`. `azura --help` lists the flags, `azura --version`
+says which build you are running.
 
 ## What it does
 
