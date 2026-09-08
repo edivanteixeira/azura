@@ -1,21 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="943" height="302" viewBox="0 0 943 302">
-<rect width="943" height="302" rx="10" fill="#0e1018"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1061" height="302" viewBox="0 0 1061 302">
+<rect width="1061" height="302" rx="10" fill="#0e1018"/>
 <g font-family="SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="14" xml:space="preserve">
 <rect x="18.0" y="18.0" width="58.8" height="19" fill="#7aa2f7"/>
 <text x="26.4" y="32.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#0b0d14" font-weight="600">azura</text>
-<text x="85.2" y="32.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0.1.7</text>
+<text x="85.2" y="32.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0.2.0</text>
 <text x="135.6" y="32.0" textLength="134.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">contoso/Fabrikam</text>
 <text x="295.2" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">1</text>
 <text x="312.0" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">PRs</text>
-<text x="354.0" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">2</text>
-<text x="370.8" y="32.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">Pipelines</text>
-<text x="463.2" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">3</text>
-<text x="480.0" y="32.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Releases</text>
-<text x="774.0" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">⚠</text>
-<text x="790.8" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">2</text>
-<text x="807.6" y="32.0" textLength="58.8" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">pending</text>
-<text x="883.2" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">⟳</text>
-<text x="900.0" y="32.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0s</text>
+<text x="345.6" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">(7)</text>
+<text x="387.6" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">2</text>
+<text x="404.4" y="32.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">Pipelines</text>
+<text x="488.4" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">(8)</text>
+<text x="530.4" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">3</text>
+<text x="547.2" y="32.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Releases</text>
+<text x="622.8" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">(7)</text>
+<text x="891.6" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">⚠</text>
+<text x="908.4" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">2</text>
+<text x="925.2" y="32.0" textLength="58.8" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">pending</text>
+<text x="1000.8" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">⟳</text>
+<text x="1017.6" y="32.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0s</text>
 <text x="18.0" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╭</text>
 <text x="34.8" y="51.0" textLength="50.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">recent</text>
 <text x="93.6" y="51.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">runs</text>
@@ -112,96 +115,110 @@
 <text x="891.6" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
 <text x="900.0" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
 <text x="908.4" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
-<text x="916.8" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╮</text>
+<text x="916.8" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="925.2" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="933.6" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="942.0" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="950.4" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="958.8" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="967.2" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="975.6" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="984.0" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="992.4" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1000.8" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1009.2" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1017.6" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1026.0" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1034.4" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╮</text>
 <text x="18.0" y="70.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="51.6" y="70.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">pipeline</text>
-<text x="303.6" y="70.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">state</text>
-<text x="412.8" y="70.0" textLength="50.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">branch</text>
-<text x="656.4" y="70.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">who</text>
-<text x="816.0" y="70.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">dur</text>
-<text x="874.8" y="70.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">age</text>
-<text x="916.8" y="70.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
-<rect x="26.4" y="75.0" width="890.4" height="19" fill="#282e42"/>
+<text x="421.2" y="70.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">state</text>
+<text x="530.4" y="70.0" textLength="50.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">branch</text>
+<text x="774.0" y="70.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">who</text>
+<text x="933.6" y="70.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">dur</text>
+<text x="992.4" y="70.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">age</text>
+<text x="1034.4" y="70.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<rect x="26.4" y="75.0" width="1008.0" height="19" fill="#282e42"/>
 <text x="18.0" y="89.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="26.4" y="89.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3" font-weight="600">▍</text>
 <text x="34.8" y="89.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#e0af68" font-weight="600">◐</text>
 <text x="51.6" y="89.0" textLength="100.8" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3" font-weight="600">checkout-api</text>
-<text x="303.6" y="89.0" textLength="84.0" lengthAdjust="spacingAndGlyphs" fill="#e0af68" font-weight="600">inProgress</text>
-<text x="412.8" y="89.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">main</text>
-<text x="656.4" y="89.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">Ana</text>
-<text x="690.0" y="89.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">Souza</text>
-<text x="816.0" y="89.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">0:00</text>
-<text x="874.8" y="89.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">3m</text>
-<text x="916.8" y="89.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="421.2" y="89.0" textLength="84.0" lengthAdjust="spacingAndGlyphs" fill="#e0af68" font-weight="600">inProgress</text>
+<text x="530.4" y="89.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">main</text>
+<text x="774.0" y="89.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">Ana</text>
+<text x="807.6" y="89.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">Souza</text>
+<text x="933.6" y="89.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">0:00</text>
+<text x="992.4" y="89.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c" font-weight="600">3m</text>
+<text x="1034.4" y="89.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="108.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="34.8" y="108.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">●</text>
 <text x="51.6" y="108.0" textLength="84.0" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">storefront</text>
-<text x="303.6" y="108.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">succeeded</text>
-<text x="412.8" y="108.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">main</text>
-<text x="656.4" y="108.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Bruno</text>
-<text x="706.8" y="108.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Lima</text>
-<text x="816.0" y="108.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">3:00</text>
-<text x="874.8" y="108.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">22m</text>
-<text x="916.8" y="108.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="421.2" y="108.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">succeeded</text>
+<text x="530.4" y="108.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">main</text>
+<text x="774.0" y="108.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Bruno</text>
+<text x="824.4" y="108.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Lima</text>
+<text x="933.6" y="108.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">3:00</text>
+<text x="992.4" y="108.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">22m</text>
+<text x="1034.4" y="108.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="127.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="34.8" y="127.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#f07178">●</text>
 <text x="51.6" y="127.0" textLength="134.4" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">invoicing-worker</text>
-<text x="303.6" y="127.0" textLength="50.4" lengthAdjust="spacingAndGlyphs" fill="#f07178">failed</text>
-<text x="412.8" y="127.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">feature/405</text>
-<text x="656.4" y="127.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Diego</text>
-<text x="706.8" y="127.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Reis</text>
-<text x="816.0" y="127.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">1:00</text>
-<text x="874.8" y="127.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">48m</text>
-<text x="916.8" y="127.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="421.2" y="127.0" textLength="50.4" lengthAdjust="spacingAndGlyphs" fill="#f07178">failed</text>
+<text x="530.4" y="127.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">feature/405</text>
+<text x="774.0" y="127.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Diego</text>
+<text x="824.4" y="127.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Reis</text>
+<text x="933.6" y="127.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">1:00</text>
+<text x="992.4" y="127.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">48m</text>
+<text x="1034.4" y="127.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="146.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="34.8" y="146.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">●</text>
 <text x="51.6" y="146.0" textLength="168.0" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">checkout-api-staging</text>
-<text x="303.6" y="146.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">succeeded</text>
-<text x="412.8" y="146.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">feature/411</text>
-<text x="656.4" y="146.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Bruno</text>
-<text x="706.8" y="146.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Lima</text>
-<text x="816.0" y="146.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">3:00</text>
-<text x="874.8" y="146.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c">1h</text>
-<text x="916.8" y="146.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="421.2" y="146.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">succeeded</text>
+<text x="530.4" y="146.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">feature/411</text>
+<text x="774.0" y="146.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Bruno</text>
+<text x="824.4" y="146.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Lima</text>
+<text x="933.6" y="146.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">3:00</text>
+<text x="992.4" y="146.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c">1h</text>
+<text x="1034.4" y="146.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="165.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="34.8" y="165.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">●</text>
 <text x="51.6" y="165.0" textLength="151.2" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">storefront-staging</text>
-<text x="303.6" y="165.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">succeeded</text>
-<text x="412.8" y="165.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">feature/412</text>
-<text x="656.4" y="165.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Ana</text>
-<text x="690.0" y="165.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Souza</text>
-<text x="816.0" y="165.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">2:00</text>
-<text x="874.8" y="165.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c">2h</text>
-<text x="916.8" y="165.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="421.2" y="165.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">succeeded</text>
+<text x="530.4" y="165.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">feature/412</text>
+<text x="774.0" y="165.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Ana</text>
+<text x="807.6" y="165.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Souza</text>
+<text x="933.6" y="165.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">2:00</text>
+<text x="992.4" y="165.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c">2h</text>
+<text x="1034.4" y="165.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="184.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="34.8" y="184.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#e0af68">◐</text>
 <text x="51.6" y="184.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">e2e-nightly</text>
-<text x="303.6" y="184.0" textLength="100.8" lengthAdjust="spacingAndGlyphs" fill="#e0af68">partiallySuc</text>
-<text x="412.8" y="184.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">main</text>
-<text x="656.4" y="184.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">scheduled</text>
-<text x="816.0" y="184.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">24:00</text>
-<text x="874.8" y="184.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c">6h</text>
-<text x="916.8" y="184.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="421.2" y="184.0" textLength="100.8" lengthAdjust="spacingAndGlyphs" fill="#e0af68">partiallySuc</text>
+<text x="530.4" y="184.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">main</text>
+<text x="774.0" y="184.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">scheduled</text>
+<text x="933.6" y="184.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">24:00</text>
+<text x="992.4" y="184.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c">6h</text>
+<text x="1034.4" y="184.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="203.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="34.8" y="203.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">●</text>
 <text x="51.6" y="203.0" textLength="100.8" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">checkout-api</text>
-<text x="303.6" y="203.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">succeeded</text>
-<text x="412.8" y="203.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">main</text>
-<text x="656.4" y="203.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Carla</text>
-<text x="706.8" y="203.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Dias</text>
-<text x="816.0" y="203.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">3:00</text>
-<text x="874.8" y="203.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">10h</text>
-<text x="916.8" y="203.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="421.2" y="203.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">succeeded</text>
+<text x="530.4" y="203.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">main</text>
+<text x="774.0" y="203.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Carla</text>
+<text x="824.4" y="203.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Dias</text>
+<text x="933.6" y="203.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">3:00</text>
+<text x="992.4" y="203.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">10h</text>
+<text x="1034.4" y="203.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="222.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="34.8" y="222.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">○</text>
 <text x="51.6" y="222.0" textLength="117.6" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">terraform-plan</text>
-<text x="303.6" y="222.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">canceled</text>
-<text x="412.8" y="222.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">feature/399</text>
-<text x="656.4" y="222.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Elisa</text>
-<text x="706.8" y="222.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Prado</text>
-<text x="816.0" y="222.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0:00</text>
-<text x="874.8" y="222.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">15h</text>
-<text x="916.8" y="222.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="421.2" y="222.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">canceled</text>
+<text x="530.4" y="222.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">feature/399</text>
+<text x="774.0" y="222.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Elisa</text>
+<text x="824.4" y="222.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Prado</text>
+<text x="933.6" y="222.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0:00</text>
+<text x="992.4" y="222.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">15h</text>
+<text x="1034.4" y="222.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╰</text>
 <text x="26.4" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
 <text x="34.8" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
@@ -309,7 +326,21 @@
 <text x="891.6" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
 <text x="900.0" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
 <text x="908.4" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
-<text x="916.8" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╯</text>
+<text x="916.8" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="925.2" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="933.6" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="942.0" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="950.4" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="958.8" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="967.2" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="975.6" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="984.0" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="992.4" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1000.8" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1009.2" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1017.6" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1026.0" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1034.4" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╯</text>
 <text x="26.4" y="260.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">·</text>
 <text x="43.2" y="260.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">e2e-nightly</text>
 <text x="144.0" y="260.0" textLength="50.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">queued</text>

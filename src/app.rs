@@ -24,9 +24,80 @@ impl Tab {
     }
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum GateKind {
+    Ready,
+    Waiting,
+    Blocked,
+}
+
+/// O resumo de "esse PR pode ser mergeado?" — a pergunta que a lista de votos
+/// não responde.
+#[derive(Clone)]
+pub struct Gate {
+    pub kind: GateKind,
+    pub label: String,
+}
+
+fn nome_curto(policy: &str) -> &str {
+    match policy {
+        p if p.contains("merge strategy") => "strategy",
+        p if p.contains("reviewers") => "reviewers",
+        p if p.contains("Comment") => "comments",
+        p if p.contains("Work item") => "work items",
+        p if p.contains("Build") => "build",
+        p if p.contains("File size") => "file size",
+        p if p.contains("Path") => "path",
+        p => p,
+    }
+}
+
+/// Reprovada ganha de pendente, que ganha de aprovada. Só policies bloqueantes
+/// contam: as informativas não impedem o merge.
+pub fn resume_policies(evals: &[Evaluation]) -> Gate {
+    let bloqueantes: Vec<&Evaluation> = evals
+        .iter()
+        .filter(|e| e.configuration.is_blocking)
+        .collect();
+    if bloqueantes.is_empty() {
+        return Gate {
+            kind: GateKind::Ready,
+            label: "ready".into(),
+        };
+    }
+    if let Some(e) = bloqueantes
+        .iter()
+        .find(|e| e.status == "rejected" || e.status == "broken")
+    {
+        return Gate {
+            kind: GateKind::Blocked,
+            label: nome_curto(&e.configuration.kind.display_name).into(),
+        };
+    }
+    let pendentes: Vec<&str> = bloqueantes
+        .iter()
+        .filter(|e| e.status == "queued" || e.status == "running")
+        .map(|e| nome_curto(&e.configuration.kind.display_name))
+        .collect();
+    match pendentes.len() {
+        0 => Gate {
+            kind: GateKind::Ready,
+            label: "ready".into(),
+        },
+        1 => Gate {
+            kind: GateKind::Waiting,
+            label: pendentes[0].into(),
+        },
+        n => Gate {
+            kind: GateKind::Waiting,
+            label: format!("{} checks", n),
+        },
+    }
+}
+
 /// O que a aba de PRs mostra. "autor ou reviewer" não serve como filtro:
 /// em times pequenos isso é praticamente a lista inteira.
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PrScope {
     All,
     Mine,
@@ -59,10 +130,11 @@ impl PrScope {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum View {
     List,
     Diff,
+    Threads,
     Timeline,
     Log,
     Help,
@@ -156,6 +228,16 @@ pub enum Action {
     CancelBuild(i64),
     Approval(i64, bool),
     Deploy(i64, i64, String),
+    Reply(String, i64, i64, String),
+}
+
+/// O que fazer com o texto digitado num Modal::Input.
+#[derive(Clone)]
+pub enum InputKind {
+    /// (id da definição, nome) — o texto é a branch
+    RunBuild(i64, String),
+    /// (repo, pr, thread) — o texto é a resposta
+    Reply(String, i64, i64),
 }
 
 pub enum Modal {
@@ -167,7 +249,7 @@ pub enum Modal {
     Input {
         title: String,
         value: String,
-        def: (i64, String),
+        kind: InputKind,
     },
     Select {
         title: String,
@@ -187,6 +269,9 @@ pub enum Msg {
     Changes(Vec<Change>),
     Diff(Vec<DiffLine>),
     Timeline(Vec<Record>),
+    Policies(i64, Vec<Evaluation>),
+    Strategy(Option<String>),
+    Threads(Vec<Thread>),
     Log(String),
     Ok(String),
     Err(String),
@@ -225,7 +310,14 @@ pub struct App {
     pub filter: String,
     pub typing_filter: bool,
 
+    pub gates: std::collections::HashMap<i64, Gate>,
+    pub merge_strategy: Option<String>,
+    pub strategy_loaded: bool,
+
     pub pr: Option<PullRequest>,
+    pub threads: Vec<Thread>,
+    pub thread_sel: usize,
+
     pub changes: Vec<Change>,
     pub change_sel: usize,
     pub diff: Vec<DiffLine>,
@@ -276,7 +368,12 @@ impl App {
             scope: PrScope::All,
             filter: String::new(),
             typing_filter: false,
+            gates: std::collections::HashMap::new(),
+            merge_strategy: None,
+            strategy_loaded: false,
             pr: None,
+            threads: vec![],
+            thread_sel: 0,
             changes: vec![],
             change_sel: 0,
             diff: vec![],
@@ -328,10 +425,60 @@ impl App {
         });
     }
 
+    /// Busca as policies dos PRs que ainda não estão em cache, com concorrência
+    /// limitada — são dezenas de PRs e uma requisição por PR.
+    fn fetch_gates(&mut self) {
+        let faltando: Vec<i64> = self
+            .prs
+            .iter()
+            .map(|p| p.pull_request_id)
+            .filter(|id| !self.gates.contains_key(id))
+            .take(80)
+            .collect();
+        if faltando.is_empty() {
+            return;
+        }
+        let c = self.client.clone();
+        let tx = self.tx.clone();
+        self.loading += 1;
+        tokio::spawn(async move {
+            use futures::stream::StreamExt;
+            futures::stream::iter(faltando)
+                .map(|id| {
+                    let c = c.clone();
+                    let tx = tx.clone();
+                    async move {
+                        // erro aqui não pode sumir: a coluna ficaria em "·" para
+                        // sempre sem ninguém saber por quê
+                        match c.pr_policies(id).await {
+                            Ok(evals) => {
+                                let _ = tx.send(Msg::Policies(id, evals));
+                            }
+                            Err(e) => {
+                                let _ = tx.send(Msg::Err(format!("policies !{id}: {e}")));
+                            }
+                        }
+                    }
+                })
+                .buffer_unordered(8)
+                .collect::<Vec<_>>()
+                .await;
+            let _ = tx.send(Msg::Done);
+        });
+    }
+
     pub fn refresh_all(&mut self) {
         self.go(|c| async move { c.approvals().await }, Msg::Approvals);
         match self.tab {
-            Tab::Prs => self.go(|c| async move { c.pull_requests().await }, Msg::Prs),
+            Tab::Prs => {
+                self.go(|c| async move { c.pull_requests().await }, Msg::Prs);
+                if !self.strategy_loaded {
+                    self.go(
+                        |c| async move { c.required_merge_strategy().await },
+                        Msg::Strategy,
+                    );
+                }
+            }
             Tab::Pipelines => {
                 self.go(|c| async move { c.builds().await }, Msg::Builds);
                 if self.defs.is_empty() {
@@ -503,6 +650,7 @@ impl App {
             Msg::Prs(v) => {
                 self.prs = v;
                 self.loaded[0] = true;
+                self.fetch_gates();
             }
             Msg::Builds(v) => {
                 self.builds = v;
@@ -533,6 +681,17 @@ impl App {
             Msg::Diff(v) => {
                 self.diff = v;
                 self.diff_scroll = 0;
+            }
+            Msg::Policies(id, evals) => {
+                self.gates.insert(id, resume_policies(&evals));
+            }
+            Msg::Strategy(e) => {
+                self.merge_strategy = e;
+                self.strategy_loaded = true;
+            }
+            Msg::Threads(v) => {
+                self.threads = v;
+                self.thread_sel = 0;
             }
             Msg::Timeline(v) => {
                 self.timeline = v;
@@ -605,10 +764,13 @@ impl App {
                     Msg::Ok,
                 )
             }
-            Action::CompletePr(repo, pr, sha) => self.go(
-                move |c| async move { c.complete_pr(&repo, pr, &sha).await },
-                Msg::Ok,
-            ),
+            Action::CompletePr(repo, pr, sha) => {
+                let estrategia = self.merge_strategy.clone();
+                self.go(
+                    move |c| async move { c.complete_pr(&repo, pr, &sha, estrategia).await },
+                    Msg::Ok,
+                )
+            }
             Action::AbandonPr(repo, pr) => self.go(
                 move |c| async move { c.abandon_pr(&repo, pr).await },
                 Msg::Ok,
@@ -622,6 +784,10 @@ impl App {
             }
             Action::Approval(id, ok) => self.go(
                 move |c| async move { c.set_approval(id, ok, "via azura").await },
+                Msg::Ok,
+            ),
+            Action::Reply(repo, pr, thread, texto) => self.go(
+                move |c| async move { c.reply(&repo, pr, thread, &texto).await },
                 Msg::Ok,
             ),
             Action::Deploy(rel, env, label) => self.go(
@@ -664,6 +830,7 @@ impl App {
         match self.view {
             View::List => self.list_key(k),
             View::Diff => self.diff_key(k),
+            View::Threads => self.threads_key(k),
             View::Timeline => self.timeline_key(k),
             View::Log => self.log_key(k),
             View::Help => {
@@ -729,25 +896,34 @@ impl App {
                 }
                 _ => self.modal = None,
             },
-            Some(Modal::Input { value, def, .. }) => match k.code {
+            Some(Modal::Input { value, kind, .. }) => match k.code {
                 KeyCode::Char(c) => value.push(c),
                 KeyCode::Backspace => {
                     value.pop();
                 }
                 KeyCode::Enter => {
-                    let (id, name) = def.clone();
-                    let branch = value.clone();
+                    let texto = value.clone();
+                    let kind = kind.clone();
                     self.modal = None;
-                    let branch_ref = if branch.starts_with("refs/") {
-                        branch.clone()
-                    } else {
-                        format!("refs/heads/{branch}")
-                    };
-                    self.confirm(
-                        "Run pipeline",
-                        vec![name.clone(), format!("branch {branch_ref}")],
-                        Action::RunBuild(id, name, branch_ref),
-                    );
+                    match kind {
+                        InputKind::RunBuild(id, name) => {
+                            let branch_ref = if texto.starts_with("refs/") {
+                                texto
+                            } else {
+                                format!("refs/heads/{texto}")
+                            };
+                            self.confirm(
+                                "Run pipeline",
+                                vec![name.clone(), format!("branch {branch_ref}")],
+                                Action::RunBuild(id, name, branch_ref),
+                            );
+                        }
+                        InputKind::Reply(repo, pr, thread) => {
+                            if !texto.trim().is_empty() {
+                                self.run(Action::Reply(repo, pr, thread, texto));
+                            }
+                        }
+                    }
                 }
                 KeyCode::Esc => self.modal = None,
                 _ => {}
@@ -813,7 +989,10 @@ impl App {
             KeyCode::Esc => {
                 self.filter.clear();
             }
-            KeyCode::Char('r') => self.refresh_all(),
+            KeyCode::Char('r') => {
+                self.gates.clear();
+                self.refresh_all();
+            }
             _ => match self.tab {
                 Tab::Prs => self.pr_key(k),
                 Tab::Pipelines => self.pipe_key(k),
@@ -865,6 +1044,9 @@ impl App {
                 let url = self.client.pr_url(&repo_name, id);
                 self.open(url);
             }
+            KeyCode::Char('t') => {
+                self.open_threads(repo, id, pr.repository.name.clone(), title);
+            }
             KeyCode::Enter => {
                 self.view = View::Diff;
                 self.pr = None;
@@ -911,7 +1093,7 @@ impl App {
                 self.modal = Some(Modal::Input {
                     title: format!("Run {name} on branch:"),
                     value: branch,
-                    def: (id, name),
+                    kind: InputKind::RunBuild(id, name),
                 });
             }
             KeyCode::Char('x') => {
@@ -1035,6 +1217,65 @@ impl App {
         }
     }
 
+    fn open_threads(&mut self, repo: String, id: i64, repo_name: String, title: String) {
+        self.view = View::Threads;
+        self.threads.clear();
+        self.thread_sel = 0;
+        self.log_title = format!("!{id} {title}");
+        self.pr = Some(PullRequest {
+            pull_request_id: id,
+            title,
+            repository: Named {
+                id: serde_json::json!(repo.clone()),
+                name: repo_name,
+                ..Default::default()
+            },
+            ..Default::default()
+        });
+        self.go(
+            move |c| async move { c.pr_threads(&repo, id).await },
+            Msg::Threads,
+        );
+    }
+
+    fn threads_key(&mut self, k: KeyEvent) {
+        let len = self.threads.len();
+        match k.code {
+            KeyCode::Esc | KeyCode::Char('q') => self.view = View::List,
+            KeyCode::Char('j') | KeyCode::Down => {
+                self.thread_sel = (self.thread_sel + 1).min(len.saturating_sub(1))
+            }
+            KeyCode::Char('k') | KeyCode::Up => self.thread_sel = self.thread_sel.saturating_sub(1),
+            KeyCode::Char('r') => {
+                if let Some(pr) = &self.pr {
+                    let (repo, id) = (pr.repo_id(), pr.pull_request_id);
+                    self.go(
+                        move |c| async move { c.pr_threads(&repo, id).await },
+                        Msg::Threads,
+                    );
+                }
+            }
+            KeyCode::Char('R') | KeyCode::Enter => {
+                let (Some(pr), Some(t)) = (self.pr.as_ref(), self.threads.get(self.thread_sel))
+                else {
+                    return;
+                };
+                self.modal = Some(Modal::Input {
+                    title: format!("Reply on thread {}:", t.id),
+                    value: String::new(),
+                    kind: InputKind::Reply(pr.repo_id(), pr.pull_request_id, t.id),
+                });
+            }
+            KeyCode::Char('o') => {
+                if let Some(pr) = &self.pr {
+                    let url = self.client.pr_url(&pr.repository.name, pr.pull_request_id);
+                    self.open(url);
+                }
+            }
+            _ => {}
+        }
+    }
+
     fn diff_key(&mut self, k: KeyEvent) {
         let files = self.changes.len();
         match k.code {
@@ -1073,6 +1314,16 @@ impl App {
                 self.search.clear();
             }
             KeyCode::Char('n') => self.find_next(),
+            KeyCode::Char('t') => {
+                if let Some(pr) = self.pr.clone() {
+                    self.open_threads(
+                        pr.repo_id(),
+                        pr.pull_request_id,
+                        pr.repository.name.clone(),
+                        pr.title.clone(),
+                    );
+                }
+            }
             KeyCode::Char('o') => {
                 if let Some(pr) = &self.pr {
                     let url = self.client.pr_url(&pr.repository.name, pr.pull_request_id);

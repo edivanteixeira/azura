@@ -9,6 +9,10 @@ Approving a production deploy becomes one key and one confirmation, instead of f
 
 ![pull requests](assets/prs.svg)
 
+The **blocked on** column answers the question a list of votes cannot: can this
+actually merge? It comes from the branch policies evaluated against each PR —
+`ready`, `reviewers`, `build`, `strategy`, or `2 checks` when several are pending.
+
 ## Install
 
 ```sh
@@ -59,6 +63,11 @@ a confirmation that spells out exactly what is about to happen.
 
 ![releases](assets/releases.svg)
 
+### Comments
+
+`t` opens the comment threads of a pull request, `R` replies to one. Threads are
+shown with their file context, so a review reads in order.
+
 ### PR diffs, inside the CLI
 
 No local clone needed: the changed files and both sides of the diff come from the API.
@@ -76,7 +85,8 @@ No local clone needed: the changed files and both sides of the diff come from th
 | `/` `esc` | filter · clear |
 | `r` | refresh (automatic every 30s) |
 | `o` `enter` | open in browser · detail |
-| **PRs** | `a` approve · `w` waiting for author · `x` reject · `c` complete · `D` abandon · `m` mine only · `enter` diff |
+| **PRs** | `a` approve · `w` waiting for author · `x` reject · `c` complete · `D` abandon · `enter` diff · `t` comments |
+| **PR scope** | `m` cycles: all → opened by me → waiting for my review |
 | **Pipelines** | `enter` steps · `l` log of the failed step · `R` run · `x` cancel · `p` definitions |
 | **Releases** | `a` approve · `x` reject · `d` deploy a stage |
 | **Diff and log** | `J/K` switch file · `j/k` scroll · `/` `n` search |
@@ -90,6 +100,8 @@ The filter matches everything on screen — title, repo, author, branch, state, 
   A good way to explore the app risk-free.
 - Complete, abandon, queue, cancel, approve, reject and deploy **always** ask for confirmation
   naming the target. Approving a PR (which is reversible) goes straight through.
+- Completing a PR sends the merge strategy your branch policy requires. Relying on
+  the API default silently breaks the moment a project enables *Require a merge strategy*.
 - The token lives in `~/.config/azura/config.toml` with mode `600` and never leaves for any host
   other than your organization's `dev.azure.com` / `vsrm.dev.azure.com`.
 
@@ -123,8 +135,14 @@ cargo test -- --ignored --nocapture         # smoke tests against your real orga
 cargo test shot -- --ignored                # regenerate the README SVGs
 ```
 
-The render tests draw 5 screens × 3 tabs × 3 modals at 4 terminal sizes, including 8×3 —
-that is where layout arithmetic overflows.
+Two layers of tests, neither needing credentials:
+
+- **Render tests** draw every screen × tab × modal at 4 terminal sizes, including 8×3 —
+  that is where layout arithmetic overflows.
+- **Screen tests** (`src/e2e.rs`) boot the whole app against a fake HTTP server and read
+  the text a person would see: that the status bar is not stuck on `loading…`, that `m`
+  cycles the three scopes, that the policy column says what is missing, that a reply
+  actually posts — and that no screen slipped back into Portuguese.
 
 The screenshots come out of the real ratatui buffer with fake data, so they cannot drift
 away from the actual UI.

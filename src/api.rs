@@ -218,14 +218,90 @@ pub struct Release {
     pub environments: Vec<Environment>,
 }
 
+#[derive(Debug, Deserialize, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct PolicyType {
+    #[serde(default, deserialize_with = "nullable")]
+    pub display_name: String,
+}
+
+#[derive(Debug, Deserialize, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct PolicyConfig {
+    #[serde(rename = "type", default, deserialize_with = "nullable")]
+    pub kind: PolicyType,
+    #[serde(default, deserialize_with = "nullable")]
+    pub is_blocking: bool,
+}
+
+/// Uma policy avaliada contra um PR: `approved`, `rejected`, `queued`, `running`,
+/// `notApplicable` ou `broken`.
+#[derive(Debug, Deserialize, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct Evaluation {
+    #[serde(default, deserialize_with = "nullable")]
+    pub status: String,
+    #[serde(default, deserialize_with = "nullable")]
+    pub configuration: PolicyConfig,
+}
+
+#[derive(Debug, Deserialize, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct Comment {
+    #[serde(default, deserialize_with = "nullable")]
+    pub author: Named,
+    #[serde(default, deserialize_with = "nullable")]
+    pub content: String,
+    #[serde(default, deserialize_with = "nullable")]
+    pub published_date: String,
+    #[serde(default, deserialize_with = "nullable")]
+    pub comment_type: String,
+}
+
+#[derive(Debug, Deserialize, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct ThreadContext {
+    #[serde(default, deserialize_with = "nullable")]
+    pub file_path: String,
+}
+
+#[derive(Debug, Deserialize, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct Thread {
+    #[serde(default, deserialize_with = "nullable")]
+    pub id: i64,
+    #[serde(default, deserialize_with = "nullable")]
+    pub status: String,
+    #[serde(default, deserialize_with = "nullable")]
+    pub is_deleted: bool,
+    #[serde(default, deserialize_with = "nullable")]
+    pub comments: Vec<Comment>,
+    #[serde(default, deserialize_with = "nullable")]
+    pub thread_context: ThreadContext,
+}
+
+impl Thread {
+    /// Threads de sistema ("adicionou um reviewer") não interessam para review.
+    pub fn is_conversa(&self) -> bool {
+        !self.is_deleted
+            && self
+                .comments
+                .iter()
+                .any(|c| c.comment_type != "system" && !c.content.trim().is_empty())
+    }
+}
+
 pub struct Client {
     http: reqwest::Client,
     core: String,
+    core_org: String,
+    project: String,
     vsrm: String,
     pub web: String,
     auth: String,
     pub dry_run: bool,
     identity: std::sync::Mutex<String>,
+    project_id: tokio::sync::Mutex<String>,
 }
 
 impl Client {
@@ -235,6 +311,8 @@ impl Client {
                 .timeout(std::time::Duration::from_secs(30))
                 .build()?,
             core: format!("https://dev.azure.com/{org}/{project}/_apis"),
+            core_org: format!("https://dev.azure.com/{org}/_apis"),
+            project: project.to_string(),
             vsrm: format!("https://vsrm.dev.azure.com/{org}/{project}/_apis"),
             web: format!("https://dev.azure.com/{org}/{project}"),
             // PAT vira Basic; um bearer JWT (az account get-access-token) vai como Bearer
@@ -248,7 +326,19 @@ impl Client {
             },
             dry_run,
             identity: std::sync::Mutex::new(String::new()),
+            project_id: tokio::sync::Mutex::new(String::new()),
         })
+    }
+
+    /// Client apontado para um servidor falso, para os testes de tela.
+    #[cfg(test)]
+    pub fn for_tests(base: &str) -> Self {
+        let mut c = Self::new("org", "proj", "pat", false).unwrap();
+        c.core = format!("{base}/_apis");
+        c.core_org = format!("{base}/_apis");
+        c.vsrm = format!("{base}/_apis");
+        c.web = base.to_string();
+        c
     }
 
     fn req(
@@ -440,7 +530,18 @@ impl Client {
         .await
     }
 
-    pub async fn complete_pr(&self, repo: &str, pr: i64, source_commit: &str) -> Result<String> {
+    pub async fn complete_pr(
+        &self,
+        repo: &str,
+        pr: i64,
+        source_commit: &str,
+        estrategia: Option<String>,
+    ) -> Result<String> {
+        let mut opts = json!({ "deleteSourceBranch": true, "transitionWorkItems": true });
+        // a policy "Require a merge strategy" reprova o complete se o campo não vier
+        if let Some(e) = estrategia {
+            opts["mergeStrategy"] = Value::String(e);
+        }
         self.write(
             reqwest::Method::PATCH,
             &format!("{}/git/repositories/{repo}/pullrequests/{pr}", self.core),
@@ -448,7 +549,7 @@ impl Client {
             json!({
                 "status": "completed",
                 "lastMergeSourceCommit": { "commitId": source_commit },
-                "completionOptions": { "deleteSourceBranch": true, "transitionWorkItems": true }
+                "completionOptions": opts
             }),
             format!("PR !{pr} completed"),
         )
@@ -462,6 +563,90 @@ impl Client {
             &[],
             json!({ "status": "abandoned" }),
             format!("PR !{pr} abandoned"),
+        )
+        .await
+    }
+
+    /// GUID do projeto, exigido pelo artifactId das policies. Buscado uma vez.
+    async fn project_id(&self) -> Result<String> {
+        let mut slot = self.project_id.lock().await;
+        if slot.is_empty() {
+            // o endpoint de projeto é de organização, não do próprio projeto
+            let v: Value = self
+                .get(&format!("{}/projects/{}", self.core_org, self.project), &[])
+                .await?;
+            *slot = v["id"].as_str().unwrap_or_default().to_string();
+        }
+        Ok(slot.clone())
+    }
+
+    /// Policies avaliadas contra um PR — o que falta para ele poder ser mergeado.
+    pub async fn pr_policies(&self, pr: i64) -> Result<Vec<Evaluation>> {
+        let artifact = format!(
+            "vstfs:///CodeReview/CodeReviewId/{}/{pr}",
+            self.project_id().await?
+        );
+        self.list(
+            &format!("{}/policy/evaluations", self.core),
+            &[
+                ("artifactId", artifact.as_str()),
+                ("api-version", "7.1-preview.1"),
+            ],
+        )
+        .await
+    }
+
+    /// A estratégia de merge que a policy do projeto exige, se exigir alguma.
+    /// Sem isso, completar um PR depende do default da API casar com a policy.
+    pub async fn required_merge_strategy(&self) -> Result<Option<String>> {
+        let cfgs: Vec<Value> = self
+            .list(&format!("{}/policy/configurations", self.core), &[])
+            .await?;
+        for c in cfgs {
+            let nome = c["type"]["displayName"].as_str().unwrap_or_default();
+            if !nome.contains("merge strategy") || c["isEnabled"] != Value::Bool(true) {
+                continue;
+            }
+            let s = &c["settings"];
+            for (flag, estrategia) in [
+                ("allowSquash", "squash"),
+                ("allowNoFastForward", "noFastForward"),
+                ("allowRebase", "rebase"),
+                ("allowRebaseMerge", "rebaseMerge"),
+            ] {
+                if s[flag] == Value::Bool(true) {
+                    return Ok(Some(estrategia.to_string()));
+                }
+            }
+        }
+        Ok(None)
+    }
+
+    pub async fn pr_threads(&self, repo: &str, pr: i64) -> Result<Vec<Thread>> {
+        let ts: Vec<Thread> = self
+            .list(
+                &format!(
+                    "{}/git/repositories/{repo}/pullrequests/{pr}/threads",
+                    self.core
+                ),
+                &[],
+            )
+            .await?;
+        Ok(ts.into_iter().filter(Thread::is_conversa).collect())
+    }
+
+    pub async fn reply(&self, repo: &str, pr: i64, thread: i64, texto: &str) -> Result<String> {
+        self.write(
+            reqwest::Method::POST,
+            &format!(
+                "{}/git/repositories/{repo}/pullrequests/{pr}/threads/{thread}/comments",
+                self.core
+            ),
+            &[],
+            // ids de comentário são por thread e começam em 1: responder à thread
+            // é responder ao primeiro comentário dela
+            json!({ "content": texto, "parentCommentId": 1, "commentType": "text" }),
+            format!("replied on thread {thread}"),
         )
         .await
     }

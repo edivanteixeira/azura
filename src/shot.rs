@@ -212,6 +212,7 @@ fn mock() -> App {
     std::mem::forget(rx);
     let mut app = App::new(client, tx, "contoso".into(), "Fabrikam".into());
     app.loading = 0;
+    app.loaded = [true; 3];
     app.status = "PR !412 approved".into();
 
     app.prs = vec![
@@ -279,6 +280,23 @@ fn mock() -> App {
             "",
         ),
     ];
+    // a coluna "blocked on" só conta a história com policies avaliadas
+    let gate = |kind, label: &str| Gate {
+        kind,
+        label: label.into(),
+    };
+    app.gates = [
+        (412, gate(GateKind::Waiting, "reviewers")),
+        (411, gate(GateKind::Ready, "ready")),
+        (408, gate(GateKind::Blocked, "build")),
+        (405, gate(GateKind::Blocked, "conflicts")),
+        (402, gate(GateKind::Ready, "ready")),
+        (399, gate(GateKind::Waiting, "2 checks")),
+        (396, gate(GateKind::Waiting, "reviewers")),
+    ]
+    .into_iter()
+    .collect();
+
     app.builds = vec![
         build(
             9241,
@@ -454,11 +472,11 @@ async fn readme_svgs() {
     let mut app = mock();
 
     app.tab = Tab::Prs;
-    write(&app, "prs", 108, 13);
+    write(&app, "prs", 122, 13);
 
     app.tab = Tab::Pipelines;
     app.status = "e2e-nightly queued on refs/heads/main".into();
-    write(&app, "pipelines", 108, 14);
+    write(&app, "pipelines", 122, 14);
 
     app.tab = Tab::Releases;
     app.status = String::new();
@@ -471,7 +489,7 @@ async fn readme_svgs() {
         ],
         action: Action::Approval(8801, true),
     });
-    write(&app, "releases", 108, 15);
+    write(&app, "releases", 122, 15);
     app.modal = None;
 
     app.tab = Tab::Prs;
@@ -508,5 +526,5 @@ async fn readme_svgs() {
         },
     ];
     app.diff = diff_lines(ANTES, DEPOIS);
-    write(&app, "diff", 108, 20);
+    write(&app, "diff", 122, 20);
 }

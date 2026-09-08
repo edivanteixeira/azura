@@ -1,21 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="943" height="416" viewBox="0 0 943 416">
-<rect width="943" height="416" rx="10" fill="#0e1018"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1061" height="416" viewBox="0 0 1061 416">
+<rect width="1061" height="416" rx="10" fill="#0e1018"/>
 <g font-family="SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="14" xml:space="preserve">
 <rect x="18.0" y="18.0" width="58.8" height="19" fill="#7aa2f7"/>
 <text x="26.4" y="32.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#0b0d14" font-weight="600">azura</text>
-<text x="85.2" y="32.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0.1.7</text>
+<text x="85.2" y="32.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0.2.0</text>
 <text x="135.6" y="32.0" textLength="134.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">contoso/Fabrikam</text>
 <text x="295.2" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">1</text>
 <text x="312.0" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">PRs</text>
-<text x="354.0" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">2</text>
-<text x="370.8" y="32.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Pipelines</text>
-<text x="463.2" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">3</text>
-<text x="480.0" y="32.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Releases</text>
-<text x="774.0" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">⚠</text>
-<text x="790.8" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">2</text>
-<text x="807.6" y="32.0" textLength="58.8" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">pending</text>
-<text x="883.2" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">⟳</text>
-<text x="900.0" y="32.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0s</text>
+<text x="345.6" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">(7)</text>
+<text x="387.6" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">2</text>
+<text x="404.4" y="32.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Pipelines</text>
+<text x="488.4" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">(8)</text>
+<text x="530.4" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">3</text>
+<text x="547.2" y="32.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Releases</text>
+<text x="622.8" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">(7)</text>
+<text x="891.6" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">⚠</text>
+<text x="908.4" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">2</text>
+<text x="925.2" y="32.0" textLength="58.8" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">pending</text>
+<text x="1000.8" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">⟳</text>
+<text x="1017.6" y="32.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0s</text>
 <text x="18.0" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╭</text>
 <text x="34.8" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">4</text>
 <text x="51.6" y="51.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">files</text>
@@ -70,7 +73,21 @@
 <text x="891.6" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
 <text x="900.0" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
 <text x="908.4" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
-<text x="916.8" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╮</text>
+<text x="916.8" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="925.2" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="933.6" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="942.0" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="950.4" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="958.8" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="967.2" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="975.6" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="984.0" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="992.4" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1000.8" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1009.2" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1017.6" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1026.0" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1034.4" y="51.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╮</text>
 <rect x="43.2" y="56.0" width="193.2" height="19" fill="#282e42"/>
 <text x="18.0" y="70.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="26.4" y="70.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#e0af68">~</text>
@@ -81,7 +98,7 @@
 <text x="404.4" y="70.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7">-1,10</text>
 <text x="454.8" y="70.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7">+1,17</text>
 <text x="505.2" y="70.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7">@@</text>
-<text x="916.8" y="70.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="70.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="89.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="26.4" y="89.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">+</text>
 <text x="43.2" y="89.0" textLength="235.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">src/hooks/useSession.test.ts</text>
@@ -92,7 +109,7 @@
 <text x="522.0" y="89.0" textLength="142.8" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">useSession(token:</text>
 <text x="673.2" y="89.0" textLength="58.8" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">string)</text>
 <text x="740.4" y="89.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">{</text>
-<text x="916.8" y="89.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="89.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="108.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="26.4" y="108.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#e0af68">~</text>
 <text x="43.2" y="108.0" textLength="117.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">src/lib/api.ts</text>
@@ -103,7 +120,7 @@
 <text x="513.6" y="108.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">setUser]</text>
 <text x="589.2" y="108.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">=</text>
 <text x="606.0" y="108.0" textLength="134.4" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">useState&lt;User&gt;()</text>
-<text x="916.8" y="108.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="108.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="127.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="26.4" y="127.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#f07178">-</text>
 <text x="43.2" y="127.0" textLength="210.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">src/lib/legacy-session.ts</text>
@@ -116,18 +133,18 @@
 <text x="522.0" y="127.0" textLength="84.0" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">useRef(new</text>
 <text x="614.4" y="127.0" textLength="92.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">Map&lt;string,</text>
 <text x="715.2" y="127.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">User&gt;())</text>
-<text x="916.8" y="127.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="127.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="146.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="146.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="146.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
-<text x="916.8" y="146.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="146.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="165.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="165.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="165.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="404.4" y="165.0" textLength="100.8" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">useEffect(()</text>
 <text x="513.6" y="165.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">=&gt;</text>
 <text x="538.8" y="165.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">{</text>
-<text x="916.8" y="165.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="165.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="184.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="184.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="184.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
@@ -136,7 +153,7 @@
 <text x="471.6" y="184.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">hit</text>
 <text x="505.2" y="184.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">=</text>
 <text x="522.0" y="184.0" textLength="201.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">cache.current.get(token)</text>
-<text x="916.8" y="184.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="184.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="203.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="203.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="203.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
@@ -145,12 +162,12 @@
 <text x="446.4" y="203.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">(hit)</text>
 <text x="496.8" y="203.0" textLength="50.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">return</text>
 <text x="555.6" y="203.0" textLength="100.8" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">setUser(hit)</text>
-<text x="916.8" y="203.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="203.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="222.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="222.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="222.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="379.2" y="222.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">+</text>
-<text x="916.8" y="222.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="222.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
@@ -161,21 +178,21 @@
 <text x="715.2" y="241.0" textLength="117.6" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">Authorization:</text>
 <text x="841.2" y="241.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">token</text>
 <text x="891.6" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">}</text>
-<text x="908.4" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">}</text>
-<text x="916.8" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="908.4" y="241.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">})</text>
+<text x="1034.4" y="241.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="260.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="260.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="260.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="438.0" y="260.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">.then((r)</text>
 <text x="522.0" y="260.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">=&gt;</text>
 <text x="547.2" y="260.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#ccd2e3">r.json())</text>
-<text x="916.8" y="260.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="260.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="279.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="279.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="279.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="379.2" y="279.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#f07178">-</text>
 <text x="438.0" y="279.0" textLength="117.6" lengthAdjust="spacingAndGlyphs" fill="#f07178">.then(setUser)</text>
-<text x="916.8" y="279.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="279.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="298.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="298.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="298.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
@@ -183,20 +200,20 @@
 <text x="438.0" y="298.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">.then((u)</text>
 <text x="522.0" y="298.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">=&gt;</text>
 <text x="547.2" y="298.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">{</text>
-<text x="916.8" y="298.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="298.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="317.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="317.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="317.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="379.2" y="317.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">+</text>
 <text x="454.8" y="317.0" textLength="201.6" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">cache.current.set(token,</text>
 <text x="664.8" y="317.0" textLength="16.8" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">u)</text>
-<text x="916.8" y="317.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="317.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="336.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="362.4" y="336.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="370.8" y="336.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="379.2" y="336.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">+</text>
 <text x="454.8" y="336.0" textLength="84.0" lengthAdjust="spacingAndGlyphs" fill="#7eca9a">setUser(u)</text>
-<text x="916.8" y="336.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
+<text x="1034.4" y="336.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">│</text>
 <text x="18.0" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╰</text>
 <text x="26.4" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
 <text x="34.8" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
@@ -304,7 +321,21 @@
 <text x="891.6" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
 <text x="900.0" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
 <text x="908.4" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
-<text x="916.8" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╯</text>
+<text x="916.8" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="925.2" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="933.6" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="942.0" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="950.4" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="958.8" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="967.2" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="975.6" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="984.0" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="992.4" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1000.8" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1009.2" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1017.6" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1026.0" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">─</text>
+<text x="1034.4" y="355.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#3c425a">╯</text>
 <text x="26.4" y="393.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600">J/K</text>
 <text x="60.0" y="393.0" textLength="33.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">file</text>
 <text x="118.8" y="393.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600">j/k</text>

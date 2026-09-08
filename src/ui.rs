@@ -76,6 +76,7 @@ pub fn draw(f: &mut Frame, app: &App) {
             Tab::Releases => releases(f, body, app),
         },
         View::Diff => diff(f, body, app),
+        View::Threads => threads(f, body, app),
         View::Timeline => timeline(f, body, app),
         View::Log => logs(f, body, app),
         View::Help => help(f, body),
@@ -231,27 +232,50 @@ fn prs(f: &mut Frame, area: Rect, app: &App) {
                 p.title.clone()
             };
             let votes = format!("↑{up} ↓{down}");
+            // o que trava o merge, que os votos sozinhos não dizem
+            let (gate, gate_cor) = match app.gates.get(&p.pull_request_id) {
+                Some(g) => (
+                    g.label.clone(),
+                    match g.kind {
+                        GateKind::Ready => OK,
+                        GateKind::Waiting => WARN,
+                        GateKind::Blocked => BAD,
+                    },
+                ),
+                None => ("·".into(), DIM),
+            };
             Row::new(vec![
                 Cell::from(Line::from(mark)),
                 Cell::from(format!("!{}", p.pull_request_id)).fg(ACCENT),
-                Cell::from(trunc(&p.repository.name, 16)).fg(DIM),
+                Cell::from(trunc(&p.repository.name, 14)).fg(DIM),
                 Cell::from(trunc(&title, 60)),
-                Cell::from(trunc(&p.created_by.display_name, 18)).fg(DIM),
+                Cell::from(trunc(&p.created_by.display_name, 16)).fg(DIM),
+                Cell::from(trunc(&gate, 11)).fg(gate_cor),
                 Cell::from(votes).fg(if my_vote == 0 { WARN } else { DIM }),
                 Cell::from(ago(&p.creation_date)).fg(DIM),
             ])
         })
         .collect();
 
-    let head = Row::new(vec!["", "id", "repo", "title", "author", "votes", "age"]);
+    let head = Row::new(vec![
+        "",
+        "id",
+        "repo",
+        "title",
+        "author",
+        "blocked on",
+        "votes",
+        "age",
+    ]);
     let widths = vec![
         Constraint::Length(1),
         Constraint::Length(6),
-        Constraint::Length(16),
+        Constraint::Length(14),
         Constraint::Min(20),
-        Constraint::Length(18),
-        Constraint::Length(8),
-        Constraint::Length(5),
+        Constraint::Length(16),
+        Constraint::Length(11),
+        Constraint::Length(7),
+        Constraint::Length(4),
     ];
     table(f, area, app, app.scope.title(), head, widths, rows);
 }
@@ -449,6 +473,70 @@ fn diff(f: &mut Frame, area: Rect, app: &App) {
     f.render_widget(Paragraph::new(lines).block(panel(&title)), right);
 }
 
+fn threads(f: &mut Frame, area: Rect, app: &App) {
+    let mut lines: Vec<Line> = vec![];
+    for (i, t) in app.threads.iter().enumerate() {
+        let sel = i == app.thread_sel;
+        let marca = if sel { "▍" } else { " " };
+        let arquivo = t.thread_context.file_path.trim_start_matches('/');
+        let cabecalho = if arquivo.is_empty() {
+            format!("{marca} thread {}", t.id)
+        } else {
+            format!("{marca} {arquivo}")
+        };
+        lines.push(Line::from(vec![
+            Span::styled(
+                cabecalho,
+                if sel {
+                    Style::new().fg(ACCENT).bold()
+                } else {
+                    Style::new().fg(DIM)
+                },
+            ),
+            Span::styled(
+                format!("  {}", if t.status == "closed" { "resolved" } else { "" }),
+                Style::new().fg(OK),
+            ),
+        ]));
+        for c in t.comments.iter().filter(|c| c.comment_type != "system") {
+            lines.push(Line::from(vec![
+                Span::styled(
+                    format!("    {} ", trunc(&c.author.display_name, 20)),
+                    Style::new().fg(WARN),
+                ),
+                Span::styled(ago(&c.published_date), Style::new().fg(DIM)),
+            ]));
+            for l in c.content.lines() {
+                lines.push(Line::from(Span::raw(format!("      {}", trunc(l, 100)))));
+            }
+        }
+        lines.push(Line::from(""));
+    }
+    if lines.is_empty() {
+        lines.push(Line::from(Span::styled(
+            if app.loading > 0 {
+                "  loading…"
+            } else {
+                "  no comments on this pull request"
+            },
+            Style::new().fg(DIM),
+        )));
+    }
+    let altura = area.height.saturating_sub(2) as usize;
+    let inicio = lines.len().saturating_sub(altura).min(app.thread_sel * 3);
+    f.render_widget(
+        Paragraph::new(
+            lines
+                .into_iter()
+                .skip(inicio)
+                .take(altura)
+                .collect::<Vec<_>>(),
+        )
+        .block(panel(&format!("{} · comments", app.log_title))),
+        area,
+    );
+}
+
 fn timeline(f: &mut Frame, area: Rect, app: &App) {
     let height = area.height.saturating_sub(2) as usize;
     let start = app.tl_sel.saturating_sub(height.saturating_sub(1));
@@ -546,7 +634,8 @@ fn help(f: &mut Frame, area: Rect) {
         g("x", "reject (vote -10)"),
         g("c", "complete merge · confirms"),
         g("D", "abandon · confirms"),
-        g("m", "toggle all / mine"),
+        g("m", "cycle scope: all / mine / to review"),
+        g("t", "comment threads · R replies"),
         Line::from(""),
         Line::from(Span::styled("  pipelines", Style::new().bold())),
         g("p", "toggle runs / definitions"),
@@ -557,6 +646,9 @@ fn help(f: &mut Frame, area: Rect) {
         Line::from(Span::styled("  releases", Style::new().bold())),
         g("a x", "approve / reject · confirms"),
         g("d", "deploy a stage · confirms"),
+        Line::from(""),
+        Line::from(Span::styled("  columns", Style::new().bold())),
+        g("blocked on", "what the branch policies still want"),
         Line::from(""),
         Line::from(Span::styled("  diff and log", Style::new().bold())),
         g("J K right left", "next / previous file"),
@@ -603,6 +695,7 @@ fn key_bar(f: &mut Frame, area: Rect, app: &App) {
                 ("x", "reject"),
                 ("D", "abandon"),
                 ("enter", "diff"),
+                ("t", "comments"),
                 ("m", "scope"),
                 ("o", "browser"),
                 ("?", "keys"),
@@ -625,6 +718,13 @@ fn key_bar(f: &mut Frame, area: Rect, app: &App) {
                 ("?", "keys"),
             ],
         },
+        View::Threads => &[
+            ("j/k", "thread"),
+            ("R", "reply"),
+            ("r", "refresh"),
+            ("o", "browser"),
+            ("esc", "back"),
+        ],
         View::Diff => &[
             ("J/K", "file"),
             ("j/k", "scroll"),
@@ -820,7 +920,7 @@ mod tests {
                 Modal::Input {
                     title: "t".into(),
                     value: "master".into(),
-                    def: (1, "p".into()),
+                    kind: InputKind::RunBuild(1, "p".into()),
                 },
                 Modal::Select {
                     title: "t".into(),

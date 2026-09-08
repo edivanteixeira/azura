@@ -1,6 +1,8 @@
 mod api;
 mod app;
 mod config;
+#[cfg(test)]
+mod e2e;
 mod setup;
 #[cfg(test)]
 mod shot;
