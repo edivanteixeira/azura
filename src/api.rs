@@ -6,8 +6,21 @@ use serde_json::{Value, json};
 
 const API: &str = "7.1";
 
+/// A API devolve `null` explícito em vez de omitir o campo (passo que ainda não
+/// começou, build em execução, PR com conflito). `#[serde(default, deserialize_with = "nullable")]` sozinho só
+/// cobre campo *ausente*, então sem isso a desserialização morre com
+/// "invalid type: null, expected a string".
+fn nullable<'de, D, T>(d: D) -> Result<T, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de> + Default,
+{
+    Ok(Option::<T>::deserialize(d)?.unwrap_or_default())
+}
+
 #[derive(Deserialize)]
 struct List<T> {
+    // sem `nullable` aqui: forçaria T: Default em toda chamada de list()
     #[serde(default = "Vec::new")]
     value: Vec<T>,
 }
@@ -15,27 +28,27 @@ struct List<T> {
 #[derive(Debug, Deserialize, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Named {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub id: Value,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub display_name: String,
 }
 
 #[derive(Debug, Deserialize, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Commit {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub commit_id: String,
 }
 
 #[derive(Debug, Deserialize, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Reviewer {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub id: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub vote: i32,
 }
 
@@ -43,27 +56,27 @@ pub struct Reviewer {
 #[serde(rename_all = "camelCase")]
 pub struct PullRequest {
     pub pull_request_id: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub title: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub is_draft: bool,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub merge_status: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub creation_date: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub source_ref_name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub target_ref_name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub created_by: Named,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub repository: Named,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub reviewers: Vec<Reviewer>,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub last_merge_source_commit: Commit,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub last_merge_target_commit: Commit,
 }
 
@@ -82,25 +95,25 @@ impl PullRequest {
 #[derive(Debug, Deserialize, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Item {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub path: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub is_folder: bool,
 }
 
 #[derive(Debug, Deserialize, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Change {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub change_type: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub item: Item,
 }
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Changes {
-    #[serde(default = "Vec::new")]
+    #[serde(default, deserialize_with = "nullable")]
     change_entries: Vec<Change>,
 }
 
@@ -108,21 +121,21 @@ struct Changes {
 #[serde(rename_all = "camelCase")]
 pub struct Build {
     pub id: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub status: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub result: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub source_branch: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub definition: Named,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub requested_for: Named,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub queue_time: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub start_time: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub finish_time: String,
 }
 
@@ -130,32 +143,32 @@ pub struct Build {
 #[serde(rename_all = "camelCase")]
 pub struct Definition {
     pub id: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub path: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub queue_status: String,
 }
 
 #[derive(Debug, Deserialize, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Record {
-    #[serde(rename = "type", default)]
+    #[serde(rename = "type", default, deserialize_with = "nullable")]
     pub kind: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub state: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub result: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub order: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub start_time: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub finish_time: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub log: Option<Named>,
 }
 
@@ -169,15 +182,15 @@ impl Record {
 #[serde(rename_all = "camelCase")]
 pub struct Approval {
     pub id: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub approval_type: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub created_on: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub release: Named,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub release_definition: Named,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub release_environment: Named,
 }
 
@@ -185,9 +198,9 @@ pub struct Approval {
 #[serde(rename_all = "camelCase")]
 pub struct Environment {
     pub id: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub status: String,
 }
 
@@ -195,13 +208,13 @@ pub struct Environment {
 #[serde(rename_all = "camelCase")]
 pub struct Release {
     pub id: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub created_on: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub release_definition: Named,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "nullable")]
     pub environments: Vec<Environment>,
 }
 
@@ -547,6 +560,47 @@ fn snippet(body: &str) -> String {
 }
 
 #[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Build em execução: a API manda `null` explícito nos campos que ainda não
+    /// existem, em vez de omiti-los. Sem `nullable` isso vira
+    /// "invalid type: null, expected a string" ao abrir os passos.
+    #[test]
+    fn null_explicito_nao_quebra() {
+        let timeline = serde_json::json!({"records": [{
+            "id": "a", "parentId": null, "type": "Task", "name": "Checkout",
+            "state": "inProgress", "result": null, "startTime": null,
+            "finishTime": null, "order": 1, "log": null, "workerName": null
+        }]});
+        let recs: Vec<Record> = serde_json::from_value(timeline["records"].clone()).unwrap();
+        assert_eq!(recs[0].name, "Checkout");
+        assert_eq!(recs[0].result, "");
+        assert_eq!(recs[0].start_time, "");
+        assert!(recs[0].log_id().is_none());
+
+        let build: Build = serde_json::from_value(serde_json::json!({
+            "id": 1, "status": "inProgress", "result": null, "sourceBranch": null,
+            "definition": null, "requestedFor": null, "queueTime": null,
+            "startTime": null, "finishTime": null
+        }))
+        .unwrap();
+        assert_eq!(build.result, "");
+        assert_eq!(build.definition.name, "");
+
+        // PR com conflito pode não ter merge commit
+        let pr: PullRequest = serde_json::from_value(serde_json::json!({
+            "pullRequestId": 7, "title": null, "repository": null, "reviewers": null,
+            "lastMergeSourceCommit": null, "createdBy": null
+        }))
+        .unwrap();
+        assert_eq!(pr.pull_request_id, 7);
+        assert!(pr.last_merge_source_commit.commit_id.is_empty());
+        assert!(pr.reviewers.is_empty());
+    }
+}
+
+#[cfg(test)]
 fn live_cfg() -> crate::config::Config {
     let cfg = crate::config::Config::load();
     assert!(
@@ -598,6 +652,20 @@ mod live {
             "latest build    {} {} {}",
             b.definition.name, b.status, b.result
         );
+        // um build em execução tem null em result/startTime/finishTime/log
+        if let Some(rodando) = builds.iter().find(|b| b.status == "inProgress") {
+            let tl = c
+                .timeline(rodando.id)
+                .await
+                .expect("timeline de build em execução");
+            println!(
+                "running build   {} #{} · {} passos",
+                rodando.definition.name,
+                rodando.id,
+                tl.len()
+            );
+        }
+
         let tl = c.timeline(b.id).await.expect("timeline");
         assert!(!tl.is_empty(), "empty timeline");
         println!(
