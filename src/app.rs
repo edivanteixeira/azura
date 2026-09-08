@@ -685,7 +685,7 @@ impl App {
                     };
                     self.confirm(
                         "Disparar pipeline",
-                        vec![format!("{name}"), format!("branch {branch_ref}")],
+                        vec![name.clone(), format!("branch {branch_ref}")],
                         Action::RunBuild(id, name, branch_ref),
                     );
                 }
