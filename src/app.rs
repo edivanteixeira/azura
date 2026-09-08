@@ -24,6 +24,41 @@ impl Tab {
     }
 }
 
+/// O que a aba de PRs mostra. "autor ou reviewer" não serve como filtro:
+/// em times pequenos isso é praticamente a lista inteira.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum PrScope {
+    All,
+    Mine,
+    ToReview,
+}
+
+impl PrScope {
+    fn next(self) -> Self {
+        match self {
+            PrScope::All => PrScope::Mine,
+            PrScope::Mine => PrScope::ToReview,
+            PrScope::ToReview => PrScope::All,
+        }
+    }
+
+    pub fn title(self) -> &'static str {
+        match self {
+            PrScope::All => "active pull requests",
+            PrScope::Mine => "pull requests · opened by me",
+            PrScope::ToReview => "pull requests · waiting for my review",
+        }
+    }
+
+    pub fn empty_msg(self) -> &'static str {
+        match self {
+            PrScope::All => "nothing here",
+            PrScope::Mine => "none opened by you · m cycles the scope",
+            PrScope::ToReview => "nothing waiting on your review · m cycles the scope",
+        }
+    }
+}
+
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum View {
     List,
@@ -184,7 +219,8 @@ pub struct App {
     pub releases: Vec<Release>,
 
     pub my_id: String,
-    pub mine_only: bool,
+    pub loaded: [bool; 3],
+    pub scope: PrScope,
 
     pub filter: String,
     pub typing_filter: bool,
@@ -236,7 +272,8 @@ impl App {
             approvals: vec![],
             releases: vec![],
             my_id: String::new(),
-            mine_only: false,
+            loaded: [false; 3],
+            scope: PrScope::All,
             filter: String::new(),
             typing_filter: false,
             pr: None,
@@ -260,10 +297,13 @@ impl App {
             last_refresh: Instant::now(),
             quit: false,
         };
+        // nada de "loading…" fixo aqui: o status só muda em ação do usuário, então
+        // esse texto ficava na barra para sempre. Quem indica carregamento é o
+        // spinner do cabeçalho.
         app.status = if app.client.dry_run {
             "--dry-run: no writes will be sent".into()
         } else {
-            "loading…".into()
+            String::new()
         };
         app.refresh_all();
         app
@@ -314,9 +354,19 @@ impl App {
             .iter()
             .enumerate()
             .filter(|(_, p)| {
-                let mine = p.created_by.id.as_str() == Some(self.my_id.as_str())
-                    || p.reviewers.iter().any(|r| r.id == self.my_id);
-                (!self.mine_only || mine)
+                let sou_autor = p.created_by.id.as_str() == Some(self.my_id.as_str());
+                let no_escopo = match self.scope {
+                    PrScope::All => true,
+                    PrScope::Mine => sou_autor,
+                    // a fila que importa: falta o meu voto e o PR não é meu
+                    PrScope::ToReview => {
+                        !sou_autor
+                            && p.reviewers
+                                .iter()
+                                .any(|r| r.id == self.my_id && r.vote == 0)
+                    }
+                };
+                no_escopo
                     && self.matches(&format!(
                         "{} {} {} {} {} {} {}",
                         p.title,
@@ -450,11 +500,20 @@ impl App {
             self.my_id = self.client.identity();
         }
         match msg {
-            Msg::Prs(v) => self.prs = v,
-            Msg::Builds(v) => self.builds = v,
+            Msg::Prs(v) => {
+                self.prs = v;
+                self.loaded[0] = true;
+            }
+            Msg::Builds(v) => {
+                self.builds = v;
+                self.loaded[1] = true;
+            }
             Msg::Defs(v) => self.defs = v,
             Msg::Approvals(v) => self.approvals = v,
-            Msg::Releases(v) => self.releases = v,
+            Msg::Releases(v) => {
+                self.releases = v;
+                self.loaded[2] = true;
+            }
             Msg::PrDetail(p) => {
                 let (repo, id) = (p.repo_id(), p.pull_request_id);
                 self.pr = Some(*p);
@@ -773,7 +832,7 @@ impl App {
         // 'm' tem que funcionar com a lista vazia: senão, ligar o filtro sem
         // resultado deixa a tela sem nenhum PR selecionado e sem como desligar
         if k.code == KeyCode::Char('m') {
-            self.mine_only = !self.mine_only;
+            self.scope = self.scope.next();
             self.sel[0] = 0;
             return;
         }
@@ -891,7 +950,7 @@ impl App {
                                 .or_else(|| tl.iter().rev().find(|r| r.log_id().is_some()));
                             match rec.and_then(|r| r.log_id()) {
                                 Some(log) => c.log(id, log).await,
-                                None => Ok("(sem logs disponíveis)".into()),
+                                None => Ok("(no logs available)".into()),
                             }
                         },
                         Msg::Log,
@@ -1127,17 +1186,23 @@ mod tests {
         assert_eq!(app.visible_prs().len(), 1);
 
         app.on_key(tecla('m'));
-        assert!(app.mine_only);
-        assert_eq!(app.visible_prs().len(), 0, "nenhum PR meu");
+        assert!(app.scope == PrScope::Mine);
+        assert_eq!(app.visible_prs().len(), 0, "nenhum PR aberto por mim");
 
+        // ciclo tem que voltar ao começo mesmo passando por escopos vazios
         app.on_key(tecla('m'));
-        assert!(!app.mine_only, "preso no filtro com a lista vazia");
+        assert!(app.scope == PrScope::ToReview);
+        app.on_key(tecla('m'));
+        assert!(
+            app.scope == PrScope::All,
+            "preso no filtro com a lista vazia"
+        );
         assert_eq!(app.visible_prs().len(), 1);
     }
 
-    /// "meus" casa tanto por autoria quanto por ser reviewer.
+    /// Mine = quem abriu. ToReview = falta meu voto e o PR não é meu.
     #[tokio::test]
-    async fn mine_only_casa_autor_e_reviewer() {
+    async fn escopos_separam_autoria_de_revisao() {
         let meu = |id: &str| PullRequest {
             pull_request_id: 1,
             created_by: Named {
@@ -1159,8 +1224,11 @@ mod tests {
             ..Default::default()
         };
         let mut app = app_com(vec![meu("eu"), como_reviewer, meu("outra-pessoa")], "eu");
-        app.mine_only = true;
-        assert_eq!(app.visible_prs().len(), 2);
+        assert_eq!(app.visible_prs().len(), 3, "All mostra tudo");
+        app.scope = PrScope::Mine;
+        assert_eq!(app.visible_prs().len(), 1, "só o que eu abri");
+        app.scope = PrScope::ToReview;
+        assert_eq!(app.visible_prs().len(), 1, "só o que espera meu voto");
     }
 
     #[test]

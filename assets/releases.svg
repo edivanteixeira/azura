@@ -3,17 +3,14 @@
 <g font-family="SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size="14" xml:space="preserve">
 <rect x="18.0" y="18.0" width="58.8" height="19" fill="#7aa2f7"/>
 <text x="26.4" y="32.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#0b0d14" font-weight="600">azura</text>
-<text x="85.2" y="32.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0.1.6</text>
+<text x="85.2" y="32.0" textLength="42.0" lengthAdjust="spacingAndGlyphs" fill="#6e768c">0.1.7</text>
 <text x="135.6" y="32.0" textLength="134.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">contoso/Fabrikam</text>
 <text x="295.2" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">1</text>
 <text x="312.0" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">PRs</text>
-<text x="345.6" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">(7)</text>
-<text x="387.6" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">2</text>
-<text x="404.4" y="32.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Pipelines</text>
-<text x="488.4" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#6e768c">(8)</text>
-<text x="530.4" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">3</text>
-<text x="547.2" y="32.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">Releases</text>
-<text x="622.8" y="32.0" textLength="25.2" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">(7)</text>
+<text x="354.0" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#6e768c">2</text>
+<text x="370.8" y="32.0" textLength="75.6" lengthAdjust="spacingAndGlyphs" fill="#6e768c">Pipelines</text>
+<text x="463.2" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">3</text>
+<text x="480.0" y="32.0" textLength="67.2" lengthAdjust="spacingAndGlyphs" fill="#7aa2f7" font-weight="600" text-decoration="underline">Releases</text>
 <text x="774.0" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">⚠</text>
 <text x="790.8" y="32.0" textLength="8.4" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">2</text>
 <text x="807.6" y="32.0" textLength="58.8" lengthAdjust="spacingAndGlyphs" fill="#c692e9" font-weight="600">pending</text>

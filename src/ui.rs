@@ -112,7 +112,12 @@ fn header(f: &mut Frame, area: Rect, app: &App) {
         app.rel_rows().len(),
     ];
     for (i, name) in ["PRs", "Pipelines", "Releases"].iter().enumerate() {
-        let label = format!(" {} {name} ({}) ", i + 1, counts[i]);
+        // sem número antes de carregar: "(0)" numa aba não visitada é mentira
+        let label = if app.loaded[i] {
+            format!(" {} {name} ({}) ", i + 1, counts[i])
+        } else {
+            format!(" {} {name} ", i + 1)
+        };
         spans.push(if app.tab.idx() == i {
             Span::styled(label, Style::new().fg(ACCENT).bold().underlined())
         } else {
@@ -184,8 +189,8 @@ fn table(
         // filtrada e vazia ficava dizendo "loading…" para sempre
         let msg = if !app.filter.is_empty() {
             "nothing matches the filter · esc clears"
-        } else if app.tab == Tab::Prs && app.mine_only {
-            "no pull requests of yours · m shows everyone's"
+        } else if app.tab == Tab::Prs && app.scope != PrScope::All {
+            app.scope.empty_msg()
         } else if app.loading > 0 {
             "loading…"
         } else {
@@ -248,12 +253,7 @@ fn prs(f: &mut Frame, area: Rect, app: &App) {
         Constraint::Length(8),
         Constraint::Length(5),
     ];
-    let title = if app.mine_only {
-        "pull requests · só os meus"
-    } else {
-        "active pull requests"
-    };
-    table(f, area, app, title, head, widths, rows);
+    table(f, area, app, app.scope.title(), head, widths, rows);
 }
 
 fn pipelines(f: &mut Frame, area: Rect, app: &App) {
@@ -603,7 +603,7 @@ fn key_bar(f: &mut Frame, area: Rect, app: &App) {
                 ("x", "reject"),
                 ("D", "abandon"),
                 ("enter", "diff"),
-                ("m", "mine"),
+                ("m", "scope"),
                 ("o", "browser"),
                 ("?", "keys"),
             ],

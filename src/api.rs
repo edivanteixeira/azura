@@ -827,8 +827,10 @@ mod live_filtro {
         println!("my_id           {:?}", app.my_id);
         println!("loading         {}", app.loading);
         println!("todos           {}", app.visible_prs().len());
-        app.mine_only = true;
-        println!("só os meus      {}", app.visible_prs().len());
+        app.scope = crate::app::PrScope::Mine;
+        println!("opened by me    {}", app.visible_prs().len());
+        app.scope = crate::app::PrScope::ToReview;
+        println!("to review       {}", app.visible_prs().len());
         assert!(!app.my_id.is_empty(), "my_id não chegou no startup");
     }
 
@@ -849,9 +851,11 @@ mod live_filtro {
 
         println!("my_id           {}", app.my_id);
         println!("todos           {}", app.visible_prs().len());
-        app.mine_only = true;
+        app.scope = crate::app::PrScope::Mine;
         let meus = app.visible_prs().len();
-        println!("só os meus      {meus}");
+        println!("opened by me    {meus}");
+        app.scope = crate::app::PrScope::ToReview;
+        println!("to review       {}", app.visible_prs().len());
         assert!(
             meus > 0,
             "filtro 'meus' não achou nada com my_id {}",
