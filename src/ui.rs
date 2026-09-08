@@ -727,7 +727,7 @@ mod tests {
         let (tx, _rx) = tokio::sync::mpsc::unbounded_channel();
         let mut app = App::new(client, tx, "org".into(), "proj".into());
         app.prs = vec![PullRequest {
-            pull_request_id: 5000,
+            pull_request_id: 101,
             title: "a pull request with a reasonably long title".into(),
             merge_status: "conflicts".into(),
             source_ref_name: "refs/heads/feature/x".into(),
@@ -746,7 +746,7 @@ mod tests {
         }];
         app.defs = vec![Definition {
             id: 2,
-            name: "api-prod".into(),
+            name: "checkout-api".into(),
             ..Default::default()
         }];
         app.approvals = vec![Approval {

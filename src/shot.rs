@@ -282,7 +282,7 @@ fn mock() -> App {
     app.builds = vec![
         build(
             9241,
-            "api-prod",
+            "checkout-api",
             "inProgress",
             "",
             "main",
@@ -292,7 +292,7 @@ fn mock() -> App {
         ),
         build(
             9240,
-            "web-prod",
+            "storefront",
             "completed",
             "succeeded",
             "main",
@@ -302,7 +302,7 @@ fn mock() -> App {
         ),
         build(
             9239,
-            "worker-staging",
+            "invoicing-worker",
             "completed",
             "failed",
             "feature/405",
@@ -312,7 +312,7 @@ fn mock() -> App {
         ),
         build(
             9238,
-            "api-staging",
+            "checkout-api-staging",
             "completed",
             "succeeded",
             "feature/411",
@@ -322,7 +322,7 @@ fn mock() -> App {
         ),
         build(
             9237,
-            "web-staging",
+            "storefront-staging",
             "completed",
             "succeeded",
             "feature/412",
@@ -342,7 +342,7 @@ fn mock() -> App {
         ),
         build(
             9235,
-            "api-prod",
+            "checkout-api",
             "completed",
             "succeeded",
             "main",
@@ -352,7 +352,7 @@ fn mock() -> App {
         ),
         build(
             9234,
-            "infra-plan",
+            "terraform-plan",
             "completed",
             "canceled",
             "feature/399",
@@ -367,7 +367,7 @@ fn mock() -> App {
             approval_type: "preDeploy".into(),
             created_on: iso(12),
             release: named("Release-214"),
-            release_definition: named("api-production"),
+            release_definition: named("checkout-api-prod"),
             release_environment: named("Production"),
         },
         Approval {
@@ -375,7 +375,7 @@ fn mock() -> App {
             approval_type: "preDeploy".into(),
             created_on: iso(46),
             release: named("Release-213"),
-            release_definition: named("web-production"),
+            release_definition: named("storefront-prod"),
             release_environment: named("Production"),
         },
     ];
@@ -389,7 +389,7 @@ fn mock() -> App {
             id: 7214,
             name: "Release-214".into(),
             created_on: iso(14),
-            release_definition: named("api-production"),
+            release_definition: named("checkout-api-prod"),
             environments: vec![
                 env(1, "Staging", "succeeded"),
                 env(2, "Production", "queued"),
@@ -399,7 +399,7 @@ fn mock() -> App {
             id: 7213,
             name: "Release-213".into(),
             created_on: iso(52),
-            release_definition: named("web-production"),
+            release_definition: named("storefront-prod"),
             environments: vec![
                 env(3, "Staging", "succeeded"),
                 env(4, "Production", "queued"),
@@ -409,14 +409,14 @@ fn mock() -> App {
             id: 7212,
             name: "Release-212".into(),
             created_on: iso(300),
-            release_definition: named("worker-staging"),
+            release_definition: named("invoicing-worker"),
             environments: vec![env(5, "Staging", "succeeded")],
         },
         Release {
             id: 7211,
             name: "Release-211".into(),
             created_on: iso(880),
-            release_definition: named("api-production"),
+            release_definition: named("checkout-api-prod"),
             environments: vec![
                 env(6, "Staging", "succeeded"),
                 env(7, "Production", "succeeded"),
@@ -426,7 +426,7 @@ fn mock() -> App {
             id: 7210,
             name: "Release-210".into(),
             created_on: iso(1600),
-            release_definition: named("web-production"),
+            release_definition: named("storefront-prod"),
             environments: vec![
                 env(8, "Staging", "succeeded"),
                 env(9, "Production", "rejected"),
@@ -466,7 +466,7 @@ async fn readme_svgs() {
     app.modal = Some(Modal::Confirm {
         title: "Approve deploy".into(),
         lines: vec![
-            "api-production → stage Production".into(),
+            "checkout-api-prod → stage Production".into(),
             "Release-214 · preDeploy".into(),
         ],
         action: Action::Approval(8801, true),
