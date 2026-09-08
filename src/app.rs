@@ -769,15 +769,18 @@ impl App {
     }
 
     fn pr_key(&mut self, k: KeyEvent) {
+        // 'm' tem que funcionar com a lista vazia: senão, ligar o filtro sem
+        // resultado deixa a tela sem nenhum PR selecionado e sem como desligar
+        if k.code == KeyCode::Char('m') {
+            self.mine_only = !self.mine_only;
+            self.sel[0] = 0;
+            return;
+        }
         let Some(pr) = self.sel_pr() else { return };
         let (repo, id, title) = (pr.repo_id(), pr.pull_request_id, pr.title.clone());
         let repo_name = pr.repository.name.clone();
         let sha = pr.last_merge_source_commit.commit_id.clone();
         match k.code {
-            KeyCode::Char('m') => {
-                self.mine_only = !self.mine_only;
-                self.sel[0] = 0;
-            }
             KeyCode::Char('a') => self.run(Action::Vote(repo, id, 10)),
             KeyCode::Char('x') => self.confirm(
                 "Reject PR",
@@ -1089,6 +1092,75 @@ impl App {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::api::{Client, Named, Reviewer};
+    use std::sync::Arc;
+
+    fn app_com(prs: Vec<PullRequest>, my_id: &str) -> App {
+        let client = Arc::new(Client::new("org", "proj", "pat", true).unwrap());
+        let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+        std::mem::forget(rx);
+        let mut app = App::new(client, tx, "org".into(), "proj".into());
+        app.prs = prs;
+        app.my_id = my_id.into();
+        app
+    }
+
+    fn tecla(c: char) -> KeyEvent {
+        KeyEvent::new(KeyCode::Char(c), KeyModifiers::NONE)
+    }
+
+    /// Ligar "só os meus" sem nenhum PR meu deixava a lista vazia — e como o
+    /// tratamento da tecla abortava quando não havia PR selecionado, não havia
+    /// como desligar o filtro.
+    #[tokio::test]
+    async fn m_alterna_mesmo_com_lista_vazia() {
+        let de_outro = PullRequest {
+            pull_request_id: 1,
+            created_by: Named {
+                id: serde_json::json!("outra-pessoa"),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        let mut app = app_com(vec![de_outro], "eu");
+        assert_eq!(app.visible_prs().len(), 1);
+
+        app.on_key(tecla('m'));
+        assert!(app.mine_only);
+        assert_eq!(app.visible_prs().len(), 0, "nenhum PR meu");
+
+        app.on_key(tecla('m'));
+        assert!(!app.mine_only, "preso no filtro com a lista vazia");
+        assert_eq!(app.visible_prs().len(), 1);
+    }
+
+    /// "meus" casa tanto por autoria quanto por ser reviewer.
+    #[tokio::test]
+    async fn mine_only_casa_autor_e_reviewer() {
+        let meu = |id: &str| PullRequest {
+            pull_request_id: 1,
+            created_by: Named {
+                id: serde_json::json!(id),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        let como_reviewer = PullRequest {
+            pull_request_id: 2,
+            created_by: Named {
+                id: serde_json::json!("outra-pessoa"),
+                ..Default::default()
+            },
+            reviewers: vec![Reviewer {
+                id: "eu".into(),
+                vote: 0,
+            }],
+            ..Default::default()
+        };
+        let mut app = app_com(vec![meu("eu"), como_reviewer, meu("outra-pessoa")], "eu");
+        app.mine_only = true;
+        assert_eq!(app.visible_prs().len(), 2);
+    }
 
     #[test]
     fn diff_marca_adicoes_e_remocoes() {

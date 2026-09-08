@@ -221,8 +221,8 @@ pub struct Release {
 pub struct Client {
     http: reqwest::Client,
     core: String,
+    core_org: String,
     vsrm: String,
-    vssps: String,
     pub web: String,
     auth: String,
     pub dry_run: bool,
@@ -235,8 +235,8 @@ impl Client {
                 .timeout(std::time::Duration::from_secs(30))
                 .build()?,
             core: format!("https://dev.azure.com/{org}/{project}/_apis"),
+            core_org: format!("https://dev.azure.com/{org}/_apis"),
             vsrm: format!("https://vsrm.dev.azure.com/{org}/{project}/_apis"),
-            vssps: format!("https://vssps.dev.azure.com/{org}/_apis"),
             web: format!("https://dev.azure.com/{org}/{project}"),
             // PAT vira Basic; um bearer JWT (az account get-access-token) vai como Bearer
             auth: if pat.starts_with("ey") && pat.matches('.').count() == 2 {
@@ -257,11 +257,14 @@ impl Client {
         url: &str,
         q: &[(&str, &str)],
     ) -> reqwest::RequestBuilder {
-        self.http
+        let mut r = self
+            .http
             .request(method, url)
-            .header("Authorization", &self.auth)
-            .query(&[("api-version", API)])
-            .query(q)
+            .header("Authorization", &self.auth);
+        if !q.iter().any(|(k, _)| *k == "api-version") {
+            r = r.query(&[("api-version", API)]);
+        }
+        r.query(q)
     }
 
     async fn get<T: DeserializeOwned>(&self, url: &str, q: &[(&str, &str)]) -> Result<T> {
@@ -315,11 +318,22 @@ impl Client {
 
     // ---- perfil ----
 
+    /// O id de identidade usado em `createdBy` e `reviewers`.
+    ///
+    /// Cuidado: `profile/profiles/me` devolve o *profile* id, que é um GUID
+    /// diferente — usá-lo faz o filtro "só os meus" não casar com nada e manda
+    /// o voto para um reviewer que não existe.
     pub async fn my_id(&self) -> Result<String> {
         let v: Value = self
-            .get(&format!("{}/profile/profiles/me", self.vssps), &[])
+            .get(
+                &format!("{}/connectionData", self.core_org),
+                &[("api-version", "7.1-preview")],
+            )
             .await?;
-        Ok(v["id"].as_str().unwrap_or_default().to_string())
+        Ok(v["authenticatedUser"]["id"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string())
     }
 
     // ---- pull requests ----
@@ -633,6 +647,15 @@ mod live {
 
         let prs = c.pull_requests().await.expect("pull_requests");
         println!("active PRs      {}", prs.len());
+        // my_id tem que ser o identity id de createdBy/reviewers, não o profile id
+        let meus = prs
+            .iter()
+            .filter(|p| {
+                p.created_by.id.as_str() == Some(me.as_str())
+                    || p.reviewers.iter().any(|r| r.id == me)
+            })
+            .count();
+        println!("  mine          {meus}");
         let builds = c.builds().await.expect("builds");
         println!("builds          {}", builds.len());
         let defs = c.definitions().await.expect("definitions");
