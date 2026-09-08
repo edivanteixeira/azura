@@ -91,8 +91,14 @@ pub fn draw(f: &mut Frame, app: &App) {
 fn header(f: &mut Frame, area: Rect, app: &App) {
     let mut spans = vec![
         Span::styled(" azura ", Style::new().bg(ACCENT).fg(Color::Black).bold()),
+        // a versão fica à vista: saber qual build está rodando não deveria
+        // exigir sair do app
         Span::styled(
-            format!(" {}/{}  ", app.org, app.project),
+            format!(" {} ", env!("CARGO_PKG_VERSION")),
+            Style::new().fg(DIM),
+        ),
+        Span::styled(
+            format!("{}/{}  ", app.org, app.project),
             Style::new().fg(DIM),
         ),
     ];
