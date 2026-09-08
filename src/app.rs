@@ -143,7 +143,6 @@ pub enum Modal {
 }
 
 pub enum Msg {
-    Me(String),
     Prs(Vec<PullRequest>),
     Builds(Vec<Build>),
     Defs(Vec<Definition>),
@@ -266,7 +265,6 @@ impl App {
         } else {
             "loading…".into()
         };
-        app.go(|c| async move { c.my_id().await }, Msg::Me);
         app.refresh_all();
         app
     }
@@ -447,8 +445,11 @@ impl App {
     // ---- mensagens ----
 
     pub fn on_msg(&mut self, msg: Msg) {
+        // o identity id chega no header da primeira resposta, seja ela qual for
+        if self.my_id.is_empty() {
+            self.my_id = self.client.identity();
+        }
         match msg {
-            Msg::Me(id) => self.my_id = id,
             Msg::Prs(v) => self.prs = v,
             Msg::Builds(v) => self.builds = v,
             Msg::Defs(v) => self.defs = v,

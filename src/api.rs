@@ -221,11 +221,11 @@ pub struct Release {
 pub struct Client {
     http: reqwest::Client,
     core: String,
-    core_org: String,
     vsrm: String,
     pub web: String,
     auth: String,
     pub dry_run: bool,
+    identity: std::sync::Mutex<String>,
 }
 
 impl Client {
@@ -235,7 +235,6 @@ impl Client {
                 .timeout(std::time::Duration::from_secs(30))
                 .build()?,
             core: format!("https://dev.azure.com/{org}/{project}/_apis"),
-            core_org: format!("https://dev.azure.com/{org}/_apis"),
             vsrm: format!("https://vsrm.dev.azure.com/{org}/{project}/_apis"),
             web: format!("https://dev.azure.com/{org}/{project}"),
             // PAT vira Basic; um bearer JWT (az account get-access-token) vai como Bearer
@@ -248,6 +247,7 @@ impl Client {
                 )
             },
             dry_run,
+            identity: std::sync::Mutex::new(String::new()),
         })
     }
 
@@ -267,8 +267,33 @@ impl Client {
         r.query(q)
     }
 
+    /// Toda resposta do Azure DevOps traz `x-vss-userdata: <identity id>:<email>`.
+    /// É o mesmo id que aparece em `createdBy` e `reviewers`, então não precisamos
+    /// de chamada de perfil nenhuma — nem do escopo que ela exigiria.
+    fn capture_identity(&self, r: &reqwest::Response) {
+        let Some(v) = r
+            .headers()
+            .get("x-vss-userdata")
+            .and_then(|v| v.to_str().ok())
+        else {
+            return;
+        };
+        let id = v.split_once(':').map(|(id, _)| id).unwrap_or(v);
+        if let Ok(mut slot) = self.identity.lock()
+            && slot.as_str() != id
+        {
+            *slot = id.to_string();
+        }
+    }
+
+    /// O identity id de quem está autenticado, vazio até a primeira resposta.
+    pub fn identity(&self) -> String {
+        self.identity.lock().map(|s| s.clone()).unwrap_or_default()
+    }
+
     async fn get<T: DeserializeOwned>(&self, url: &str, q: &[(&str, &str)]) -> Result<T> {
         let r = self.req(reqwest::Method::GET, url, q).send().await?;
+        self.capture_identity(&r);
         let status = r.status();
         let body = r.text().await?;
         if !status.is_success() {
@@ -284,6 +309,7 @@ impl Client {
     /// Texto cru; 404 vira string vazia (arquivo criado ou removido no PR).
     async fn text(&self, url: &str, q: &[(&str, &str)]) -> Result<String> {
         let r = self.req(reqwest::Method::GET, url, q).send().await?;
+        self.capture_identity(&r);
         if r.status() == reqwest::StatusCode::NOT_FOUND {
             return Ok(String::new());
         }
@@ -308,6 +334,7 @@ impl Client {
             return Ok(format!("[dry-run] {method} {url} {body}"));
         }
         let r = self.req(method, url, q).json(&body).send().await?;
+        self.capture_identity(&r);
         let status = r.status();
         if !status.is_success() {
             let text = r.text().await.unwrap_or_default();
@@ -318,22 +345,13 @@ impl Client {
 
     // ---- perfil ----
 
-    /// O id de identidade usado em `createdBy` e `reviewers`.
-    ///
-    /// Cuidado: `profile/profiles/me` devolve o *profile* id, que é um GUID
-    /// diferente — usá-lo faz o filtro "só os meus" não casar com nada e manda
-    /// o voto para um reviewer que não existe.
-    pub async fn my_id(&self) -> Result<String> {
-        let v: Value = self
-            .get(
-                &format!("{}/connectionData", self.core_org),
-                &[("api-version", "7.1-preview")],
-            )
+    /// Confere org, projeto e token de uma vez: org errada não resolve, projeto
+    /// errado dá 404, token ruim dá 401/203.
+    pub async fn validate(&self) -> Result<()> {
+        let _: Value = self
+            .get(&format!("{}/git/repositories", self.core), &[("$top", "1")])
             .await?;
-        Ok(v["authenticatedUser"]["id"]
-            .as_str()
-            .unwrap_or_default()
-            .to_string())
+        Ok(())
     }
 
     // ---- pull requests ----
@@ -641,7 +659,8 @@ mod live {
     async fn leitura_ponta_a_ponta() {
         let c = client();
 
-        let me = c.my_id().await.expect("my_id");
+        c.validate().await.expect("validate");
+        let me = c.identity();
         assert!(!me.is_empty());
         println!("profile         {me}");
 
@@ -766,10 +785,80 @@ mod live {
 #[cfg(test)]
 mod live_filtro {
     use super::live_client;
-    use crate::app::{App, Tab};
+    use crate::app::{App, Msg, Tab};
     use std::sync::Arc;
 
     /// O filtro só serve se os termos que a pessoa digitaria baterem nos dados reais.
+    /// Sobe o app como o main sobe (App::new dispara os fetches) e drena as
+    /// mensagens por alguns segundos, exatamente como o loop de eventos faz.
+    #[tokio::test]
+    #[ignore]
+    async fn startup_real_preenche_my_id() {
+        let c = Arc::new(super::live_client());
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
+        let cfg = super::live_cfg();
+        let mut app = App::new(c, tx, cfg.org, cfg.project);
+
+        let prazo = tokio::time::Instant::now() + std::time::Duration::from_secs(8);
+        loop {
+            let resta = prazo.saturating_duration_since(tokio::time::Instant::now());
+            if resta.is_zero() {
+                break;
+            }
+            match tokio::time::timeout(resta, rx.recv()).await {
+                Ok(Some(m)) => {
+                    let rotulo = match &m {
+                        Msg::Prs(v) => format!("Prs({})", v.len()),
+                        Msg::Approvals(v) => format!("Approvals({})", v.len()),
+                        Msg::Err(e) => format!("ERR({e})"),
+                        Msg::Done => "Done".into(),
+                        _ => "outra".into(),
+                    };
+                    println!("  msg {rotulo}");
+                    app.on_msg(m);
+                }
+                _ => break,
+            }
+            if !app.my_id.is_empty() && !app.prs.is_empty() {
+                break;
+            }
+        }
+
+        println!("my_id           {:?}", app.my_id);
+        println!("loading         {}", app.loading);
+        println!("todos           {}", app.visible_prs().len());
+        app.mine_only = true;
+        println!("só os meus      {}", app.visible_prs().len());
+        assert!(!app.my_id.is_empty(), "my_id não chegou no startup");
+    }
+
+    /// Reproduz o caminho do app: carrega my_id e PRs pelo client real e
+    /// aplica o filtro "só os meus" como a tela faz.
+    #[tokio::test]
+    #[ignore]
+    async fn mine_only_no_app_real() {
+        let c = Arc::new(super::live_client());
+        let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+        std::mem::forget(rx);
+        let cfg = super::live_cfg();
+        let mut app = App::new(c.clone(), tx, cfg.org, cfg.project);
+        c.validate().await.expect("validate");
+        app.my_id = c.identity();
+        app.prs = c.pull_requests().await.expect("prs");
+        app.tab = Tab::Prs;
+
+        println!("my_id           {}", app.my_id);
+        println!("todos           {}", app.visible_prs().len());
+        app.mine_only = true;
+        let meus = app.visible_prs().len();
+        println!("só os meus      {meus}");
+        assert!(
+            meus > 0,
+            "filtro 'meus' não achou nada com my_id {}",
+            app.my_id
+        );
+    }
+
     #[tokio::test]
     #[ignore]
     async fn termos_reais_batem() {

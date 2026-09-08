@@ -76,7 +76,7 @@ pub async fn run(terminal: &mut DefaultTerminal, cfg: Config) -> Result<Option<C
                         pat: form.values[2].trim().to_string(),
                     };
                     match Client::new(&cfg.org, &cfg.project, &cfg.pat, true) {
-                        Ok(c) => match c.my_id().await {
+                        Ok(c) => match c.validate().await {
                             Ok(_) => return Ok(Some(cfg)),
                             Err(e) => {
                                 form.msg = friendly(&e.to_string());

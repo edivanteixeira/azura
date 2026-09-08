@@ -174,10 +174,14 @@ fn table(
     let mut state = TableState::default().with_selected(Some(app.cursor()));
     f.render_stateful_widget(t, area, &mut state);
     if empty {
-        let msg = if app.loading > 0 {
-            "loading…"
-        } else if !app.filter.is_empty() {
+        // o motivo real vem antes do "loading…": com refresh a cada 30s uma lista
+        // filtrada e vazia ficava dizendo "loading…" para sempre
+        let msg = if !app.filter.is_empty() {
             "nothing matches the filter · esc clears"
+        } else if app.tab == Tab::Prs && app.mine_only {
+            "no pull requests of yours · m shows everyone's"
+        } else if app.loading > 0 {
+            "loading…"
         } else {
             "nothing here"
         };
