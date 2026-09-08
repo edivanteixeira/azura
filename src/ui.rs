@@ -117,7 +117,7 @@ fn header(f: &mut Frame, area: Rect, app: &App) {
     let mut right = vec![];
     if !app.approvals.is_empty() {
         right.push(Span::styled(
-            format!(" ⚠ {} aprovações ", app.approvals.len()),
+            format!(" ⚠ {} pending ", app.approvals.len()),
             Style::new().fg(PEND).bold(),
         ));
     }
@@ -175,11 +175,11 @@ fn table(
     f.render_stateful_widget(t, area, &mut state);
     if empty {
         let msg = if app.loading > 0 {
-            "carregando…"
+            "loading…"
         } else if !app.filter.is_empty() {
-            "nada bate com o filtro · esc limpa"
+            "nothing matches the filter · esc clears"
         } else {
-            "nada por aqui"
+            "nothing here"
         };
         f.render_widget(
             Paragraph::new(msg).fg(DIM),
@@ -228,7 +228,7 @@ fn prs(f: &mut Frame, area: Rect, app: &App) {
         })
         .collect();
 
-    let head = Row::new(vec!["", "id", "repo", "título", "autor", "votos", "idade"]);
+    let head = Row::new(vec!["", "id", "repo", "title", "author", "votes", "age"]);
     let widths = vec![
         Constraint::Length(1),
         Constraint::Length(6),
@@ -241,7 +241,7 @@ fn prs(f: &mut Frame, area: Rect, app: &App) {
     let title = if app.mine_only {
         "pull requests · só os meus"
     } else {
-        "pull requests ativos"
+        "active pull requests"
     };
     table(f, area, app, title, head, widths, rows);
 }
@@ -265,14 +265,14 @@ fn pipelines(f: &mut Frame, area: Rect, app: &App) {
                 ])
             })
             .collect();
-        let head = Row::new(vec!["id", "pipeline", "pasta", "estado"]);
+        let head = Row::new(vec!["id", "pipeline", "folder", "state"]);
         let widths = vec![
             Constraint::Length(6),
             Constraint::Min(20),
             Constraint::Length(24),
             Constraint::Length(10),
         ];
-        return table(f, area, app, "definições de pipeline", head, widths, rows);
+        return table(f, area, app, "pipeline definitions", head, widths, rows);
     }
 
     let rows: Vec<Row> = app
@@ -297,9 +297,7 @@ fn pipelines(f: &mut Frame, area: Rect, app: &App) {
             ])
         })
         .collect();
-    let head = Row::new(vec![
-        "", "pipeline", "estado", "branch", "quem", "dur", "idade",
-    ]);
+    let head = Row::new(vec!["", "pipeline", "state", "branch", "who", "dur", "age"]);
     let widths = vec![
         Constraint::Length(1),
         Constraint::Min(18),
@@ -309,7 +307,7 @@ fn pipelines(f: &mut Frame, area: Rect, app: &App) {
         Constraint::Length(6),
         Constraint::Length(5),
     ];
-    table(f, area, app, "últimas execuções", head, widths, rows);
+    table(f, area, app, "recent runs", head, widths, rows);
 }
 
 fn releases(f: &mut Frame, area: Rect, app: &App) {
@@ -323,7 +321,7 @@ fn releases(f: &mut Frame, area: Rect, app: &App) {
                     Cell::from(Line::from(Span::styled("⚠", Style::new().fg(PEND)))),
                     Cell::from(trunc(&a.release_definition.name, 26)).fg(PEND),
                     Cell::from(a.release.name.clone()).fg(DIM),
-                    Cell::from(format!("aguarda: {}", a.release_environment.name))
+                    Cell::from(format!("waiting: {}", a.release_environment.name))
                         .fg(PEND)
                         .bold(),
                     Cell::from(ago(&a.created_on)).fg(DIM),
@@ -351,7 +349,7 @@ fn releases(f: &mut Frame, area: Rect, app: &App) {
             }
         })
         .collect();
-    let head = Row::new(vec!["", "definição", "release", "stages", "idade"]);
+    let head = Row::new(vec!["", "definition", "release", "stages", "age"]);
     let widths = vec![
         Constraint::Length(1),
         Constraint::Length(26),
@@ -363,7 +361,7 @@ fn releases(f: &mut Frame, area: Rect, app: &App) {
         f,
         area,
         app,
-        "releases · aprovações pendentes no topo",
+        "releases · pending approvals pinned on top",
         head,
         widths,
         rows,
@@ -386,7 +384,7 @@ fn diff(f: &mut Frame, area: Rect, app: &App) {
                 short_branch(&p.target_ref_name)
             )
         })
-        .unwrap_or_else(|| "carregando…".into());
+        .unwrap_or_else(|| "loading…".into());
 
     let items: Vec<Line> = app
         .changes
@@ -414,7 +412,7 @@ fn diff(f: &mut Frame, area: Rect, app: &App) {
     let start = app.change_sel.saturating_sub(visible.saturating_sub(1));
     f.render_widget(
         Paragraph::new(items.into_iter().skip(start).collect::<Vec<_>>())
-            .block(panel(&format!("{} arquivos", app.changes.len()))),
+            .block(panel(&format!("{} files", app.changes.len()))),
         left,
     );
 
@@ -476,7 +474,7 @@ fn timeline(f: &mut Frame, area: Rect, app: &App) {
         })
         .collect();
     f.render_widget(
-        Paragraph::new(lines).block(panel(&format!("build #{} · passos", app.build_id))),
+        Paragraph::new(lines).block(panel(&format!("build #{} · steps", app.build_id))),
         area,
     );
 }
@@ -505,7 +503,7 @@ fn logs(f: &mut Frame, area: Rect, app: &App) {
         .collect();
     f.render_widget(
         Paragraph::new(lines).block(panel(&format!(
-            "{} · linha {}/{}",
+            "{} · line {}/{}",
             app.log_title,
             app.log_scroll + 1,
             app.log.len()
@@ -522,40 +520,40 @@ fn help(f: &mut Frame, area: Rect) {
         ])
     };
     let lines = vec![
-        Line::from(Span::styled("  navegação", Style::new().bold())),
-        g("1 2 3 / tab", "trocar de aba"),
-        g("j k ↑ ↓", "mover · ctrl-d/ctrl-u pula 10"),
-        g("g G", "topo / fim"),
-        g("/", "filtrar a lista · esc limpa"),
-        g("r", "atualizar agora (auto a cada 30s)"),
-        g("o", "abrir no browser"),
-        g("enter", "detalhe (diff do PR, passos do build)"),
-        g("q esc", "voltar / sair"),
+        Line::from(Span::styled("  navigation", Style::new().bold())),
+        g("1 2 3 / tab", "switch tab"),
+        g("j k up down", "move · ctrl-d/ctrl-u jumps 10"),
+        g("g G", "top / bottom"),
+        g("/", "filter the list · esc clears"),
+        g("r", "refresh now (auto every 30s)"),
+        g("o", "open in browser"),
+        g("enter", "detail (PR diff, build steps)"),
+        g("q esc", "back / quit"),
         Line::from(""),
         Line::from(Span::styled("  pull requests", Style::new().bold())),
-        g("a", "aprovar (voto 10)"),
-        g("w", "aguardando autor (voto -5)"),
-        g("x", "rejeitar (voto -10)"),
-        g("c", "completar merge · confirma"),
-        g("D", "abandonar · confirma"),
-        g("m", "alternar todos / só os meus"),
+        g("a", "approve (vote 10)"),
+        g("w", "waiting for author (vote -5)"),
+        g("x", "reject (vote -10)"),
+        g("c", "complete merge · confirms"),
+        g("D", "abandon · confirms"),
+        g("m", "toggle all / mine"),
         Line::from(""),
         Line::from(Span::styled("  pipelines", Style::new().bold())),
-        g("p", "alternar execuções / definições"),
-        g("R", "disparar em uma branch · confirma"),
-        g("x", "cancelar execução · confirma"),
-        g("l", "log do passo que falhou"),
+        g("p", "toggle runs / definitions"),
+        g("R", "run on a branch · confirms"),
+        g("x", "cancel run · confirms"),
+        g("l", "log of the step that failed"),
         Line::from(""),
         Line::from(Span::styled("  releases", Style::new().bold())),
-        g("a x", "aprovar / rejeitar · confirma"),
-        g("d", "deploy de um stage · confirma"),
+        g("a x", "approve / reject · confirms"),
+        g("d", "deploy a stage · confirms"),
         Line::from(""),
-        Line::from(Span::styled("  diff e log", Style::new().bold())),
-        g("J K → ←", "próximo / anterior arquivo"),
-        g("/ n", "buscar · próxima ocorrência"),
+        Line::from(Span::styled("  diff and log", Style::new().bold())),
+        g("J K right left", "next / previous file"),
+        g("/ n", "search · next match"),
     ];
     f.render_widget(
-        Paragraph::new(lines).block(panel("atalhos · qualquer tecla fecha")),
+        Paragraph::new(lines).block(panel("keys · any key closes")),
         area,
     );
 }
@@ -571,7 +569,7 @@ fn status_bar(f: &mut Frame, area: Rect, app: &App) {
     let text = if app.typing_filter {
         format!("/{}", app.filter)
     } else if app.typing_search {
-        format!("buscar: {}", app.search)
+        format!("search: {}", app.search)
     } else {
         format!("{prefix}{}", app.status)
     };
@@ -590,51 +588,47 @@ fn key_bar(f: &mut Frame, area: Rect, app: &App) {
     let keys: &[(&str, &str)] = match app.view {
         View::List => match app.tab {
             Tab::Prs => &[
-                ("a", "aprovar"),
-                ("c", "completar"),
-                ("x", "rejeitar"),
-                ("D", "abandonar"),
+                ("a", "approve"),
+                ("c", "complete"),
+                ("x", "reject"),
+                ("D", "abandon"),
                 ("enter", "diff"),
-                ("m", "meus"),
+                ("m", "mine"),
                 ("o", "browser"),
-                ("?", "ajuda"),
+                ("?", "keys"),
             ],
             Tab::Pipelines => &[
-                ("enter", "passos"),
+                ("enter", "steps"),
                 ("l", "log"),
-                ("R", "disparar"),
-                ("x", "cancelar"),
-                ("p", "definições"),
+                ("R", "run"),
+                ("x", "cancel"),
+                ("p", "definitions"),
                 ("o", "browser"),
-                ("?", "ajuda"),
+                ("?", "keys"),
             ],
             Tab::Releases => &[
-                ("a", "aprovar"),
-                ("x", "rejeitar"),
+                ("a", "approve"),
+                ("x", "reject"),
                 ("d", "deploy"),
                 ("o", "browser"),
-                ("r", "atualizar"),
-                ("?", "ajuda"),
+                ("r", "refresh"),
+                ("?", "keys"),
             ],
         },
         View::Diff => &[
-            ("J/K", "arquivo"),
-            ("j/k", "rolar"),
-            ("/n", "buscar"),
+            ("J/K", "file"),
+            ("j/k", "scroll"),
+            ("/n", "search"),
             ("o", "browser"),
-            ("esc", "voltar"),
+            ("esc", "back"),
         ],
-        View::Timeline => &[
-            ("enter", "log do passo"),
-            ("r", "atualizar"),
-            ("esc", "voltar"),
-        ],
+        View::Timeline => &[("enter", "step log"), ("r", "refresh"), ("esc", "back")],
         View::Log => &[
-            ("j/k ctrl-d/u", "rolar"),
-            ("/n", "buscar"),
-            ("esc", "voltar"),
+            ("j/k ctrl-d/u", "scroll"),
+            ("/n", "search"),
+            ("esc", "back"),
         ],
-        View::Help => &[("qualquer tecla", "fechar")],
+        View::Help => &[("any key", "close")],
     };
     let mut spans = vec![Span::raw(" ")];
     for (k, d) in keys {
@@ -734,7 +728,7 @@ mod tests {
         let mut app = App::new(client, tx, "org".into(), "proj".into());
         app.prs = vec![PullRequest {
             pull_request_id: 5000,
-            title: "um pull request com título razoavelmente longo".into(),
+            title: "a pull request with a reasonably long title".into(),
             merge_status: "conflicts".into(),
             source_ref_name: "refs/heads/feature/x".into(),
             target_ref_name: "refs/heads/master".into(),

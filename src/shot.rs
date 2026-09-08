@@ -1,4 +1,4 @@
-//! Gera os SVGs do README a partir do buffer real do ratatui, com dados fictícios.
+//! Renders the README SVGs straight from the real ratatui buffer, with fake data.
 //! `cargo test shot -- --ignored`
 
 use crate::api::*;
@@ -212,13 +212,13 @@ fn mock() -> App {
     std::mem::forget(rx);
     let mut app = App::new(client, tx, "contoso".into(), "Fabrikam".into());
     app.loading = 0;
-    app.status = "PR !412 aprovado".into();
+    app.status = "PR !412 approved".into();
 
     app.prs = vec![
         pr(
             412,
             "web",
-            "feat: cache de sessão no edge",
+            "feat: session cache at the edge",
             "Ana Souza",
             &[10, 10],
             95,
@@ -227,7 +227,7 @@ fn mock() -> App {
         pr(
             411,
             "api",
-            "corrige timeout do upload em lotes grandes",
+            "fix: upload timeout on large batches",
             "Bruno Lima",
             &[10],
             260,
@@ -236,7 +236,7 @@ fn mock() -> App {
         pr(
             408,
             "api",
-            "migra autenticação para OIDC",
+            "migrate authentication to OIDC",
             "Carla Dias",
             &[-10, 10],
             700,
@@ -245,7 +245,7 @@ fn mock() -> App {
         pr(
             405,
             "worker",
-            "reprocessa fila de webhooks falhos",
+            "reprocess the failed webhook queue",
             "Diego Reis",
             &[],
             1500,
@@ -254,7 +254,7 @@ fn mock() -> App {
         pr(
             402,
             "web",
-            "ajusta contraste dos botões secundários",
+            "adjust contrast on secondary buttons",
             "Ana Souza",
             &[10],
             2900,
@@ -263,7 +263,7 @@ fn mock() -> App {
         pr(
             399,
             "infra",
-            "sobe node pool dedicado para o batch",
+            "add a dedicated node pool for batch",
             "Elisa Prado",
             &[],
             4300,
@@ -272,7 +272,7 @@ fn mock() -> App {
         pr(
             396,
             "api",
-            "expõe métricas de fila no /healthz",
+            "expose queue metrics on /healthz",
             "Bruno Lima",
             &[10, 10, 10],
             8800,
@@ -336,7 +336,7 @@ fn mock() -> App {
             "completed",
             "partiallySucceeded",
             "main",
-            "agendado",
+            "scheduled",
             400,
             1450,
         ),
@@ -450,21 +450,21 @@ fn write(app: &App, nome: &str, w: u16, h: u16) {
 
 #[tokio::test]
 #[ignore]
-async fn gera_svgs_do_readme() {
+async fn readme_svgs() {
     let mut app = mock();
 
     app.tab = Tab::Prs;
     write(&app, "prs", 108, 13);
 
     app.tab = Tab::Pipelines;
-    app.status = "e2e-nightly disparado em refs/heads/main".into();
+    app.status = "e2e-nightly queued on refs/heads/main".into();
     write(&app, "pipelines", 108, 14);
 
     app.tab = Tab::Releases;
     app.status = String::new();
     app.sel = [0, 0, 0];
     app.modal = Some(Modal::Confirm {
-        title: "Aprovar deploy".into(),
+        title: "Approve deploy".into(),
         lines: vec![
             "api-production → stage Production".into(),
             "Release-214 · preDeploy".into(),

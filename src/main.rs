@@ -28,7 +28,7 @@ async fn main() -> Result<()> {
                 cfg = novo;
                 if let Err(e) = cfg.save() {
                     ratatui::restore();
-                    eprintln!("configuração validada mas não salvou: {e}");
+                    eprintln!("config validated but could not be saved: {e}");
                     std::process::exit(1);
                 }
             }

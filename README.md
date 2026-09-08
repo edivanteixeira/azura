@@ -1,97 +1,98 @@
 # azura
 
-TUI para gerenciar **pull requests, pipelines e releases do Azure DevOps** sem sair do terminal.
-Aprovar um deploy de produção vira uma tecla e uma confirmação, em vez de cinco cliques no portal.
+A terminal UI for **Azure DevOps pull requests, pipelines and releases**.
+Approving a production deploy becomes one key and one confirmation, instead of five clicks in the portal.
 
 [![ci](https://github.com/edivanteixeira/azura/actions/workflows/ci.yml/badge.svg)](https://github.com/edivanteixeira/azura/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/edivanteixeira/azura)](https://github.com/edivanteixeira/azura/releases)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ![pull requests](assets/prs.svg)
 
-## Instalação
+## Install
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/edivanteixeira/azura/main/install.sh | sh
 ```
 
-Ou baixe o binário da sua plataforma em [Releases](https://github.com/edivanteixeira/azura/releases)
-— macOS (Intel e Apple Silicon), Linux (x86_64 e arm64) e Windows. Nada de runtime: é um binário só.
+Or grab the binary for your platform from [Releases](https://github.com/edivanteixeira/azura/releases)
+— macOS (Intel and Apple Silicon), Linux (x86_64 and arm64), Windows. No runtime, single binary.
 
 ```sh
-# instalar em outro diretório, sem sudo
+# install somewhere else, no sudo
 AZURA_INSTALL_DIR=$HOME/.local/bin curl -fsSL https://raw.githubusercontent.com/edivanteixeira/azura/main/install.sh | sh
 
-# ou pela fonte
+# or from source
 cargo install --git https://github.com/edivanteixeira/azura
 ```
 
-## Primeiro uso
+## First run
 
-Rode `azura`. Na primeira vez ele pede organização, projeto e um Personal Access Token,
-valida contra a API e salva em `~/.config/azura/config.toml` com permissão `600`.
-Se você já usa `az devops configure`, a organização e o projeto vêm preenchidos.
+Run `azura`. The first time it asks for your organization, project and a Personal Access Token,
+validates them against the API and saves everything to `~/.config/azura/config.toml` with mode `600`.
+If you already use `az devops configure`, the organization and project come pre-filled.
 
-O PAT sai de **Azure DevOps → User settings → Personal access tokens**, com os escopos:
+Create the PAT under **Azure DevOps → User settings → Personal access tokens**, with these scopes:
 
-| escopo | por quê |
+| scope | what it unlocks |
 |---|---|
-| Code (read & write) | ler PRs e diffs, votar, completar, abandonar |
-| Build (read & execute) | listar execuções e logs, disparar, cancelar |
-| Release (read, write, execute & manage) | aprovar, rejeitar e promover stages |
+| Code (read & write) | read PRs and diffs, vote, complete, abandon |
+| Build (read & execute) | list runs and logs, queue, cancel |
+| Release (read, write, execute & manage) | approve, reject and promote stages |
 
-Para trocar de projeto ou de token depois: `azura setup`.
+To switch project or token later: `azura setup`.
 
-## O que dá para fazer
+## What it does
 
 ### Pipelines
 
-`enter` abre os passos da execução, `l` pula direto para o log do passo que falhou —
-o motivo de 90% das idas ao browser.
+`enter` opens the run's steps, `l` jumps straight to the log of the step that failed —
+the reason for 90% of trips to the browser.
 
 ![pipelines](assets/pipelines.svg)
 
 ### Releases
 
-Aprovações pendentes ficam fixadas no topo. Toda ação que sai da sua máquina passa por
-uma confirmação que diz exatamente o que vai acontecer.
+Pending approvals are pinned to the top. Every action that leaves your machine goes through
+a confirmation that spells out exactly what is about to happen.
 
 ![releases](assets/releases.svg)
 
-### Diff de PR, dentro da CLI
+### PR diffs, inside the CLI
 
-Sem clone local: os arquivos alterados e o conteúdo dos dois lados vêm da API.
+No local clone needed: the changed files and both sides of the diff come from the API.
 
 ![diff](assets/diff.svg)
 
-## Atalhos
+## Keys
 
-`?` abre a lista completa dentro do app.
+`?` opens the full list inside the app.
 
 | | |
 |---|---|
 | `1` `2` `3` `tab` | PRs · Pipelines · Releases |
-| `j/k` `g/G` `ctrl-d/u` | navegar |
-| `/` `esc` | filtrar · limpar |
-| `r` | atualizar (automático a cada 30s) |
-| `o` `enter` | abrir no browser · detalhe |
-| **PRs** | `a` aprovar · `w` aguardando autor · `x` rejeitar · `c` completar · `D` abandonar · `m` só os meus · `enter` diff |
-| **Pipelines** | `enter` passos · `l` log do que falhou · `R` disparar · `x` cancelar · `p` definições |
-| **Releases** | `a` aprovar · `x` rejeitar · `d` deploy de stage |
-| **Diff e log** | `J/K` troca de arquivo · `j/k` rola · `/` `n` busca |
+| `j/k` `g/G` `ctrl-d/u` | move around |
+| `/` `esc` | filter · clear |
+| `r` | refresh (automatic every 30s) |
+| `o` `enter` | open in browser · detail |
+| **PRs** | `a` approve · `w` waiting for author · `x` reject · `c` complete · `D` abandon · `m` mine only · `enter` diff |
+| **Pipelines** | `enter` steps · `l` log of the failed step · `R` run · `x` cancel · `p` definitions |
+| **Releases** | `a` approve · `x` reject · `d` deploy a stage |
+| **Diff and log** | `J/K` switch file · `j/k` scroll · `/` `n` search |
 
-O filtro casa com tudo que está na tela — título, repo, autor, branch, estado, stages.
-`/failed` mostra só o que quebrou, `/conflicts` só os PRs com conflito, `/production` só a produção.
+The filter matches everything on screen — title, repo, author, branch, state, stages.
+`/failed` shows only what broke, `/conflicts` only PRs with merge conflicts, `/production` only production.
 
-## Segurança
+## Safety
 
-- **`azura --dry-run`** — nenhuma escrita é enviada; cada ação só descreve o request que faria.
-  Boa forma de conhecer o app sem risco.
-- Completar, abandonar, disparar, cancelar, aprovar, rejeitar e fazer deploy **sempre** pedem
-  confirmação nomeando o alvo. Aprovar um PR (que é reversível) vai direto.
-- O token fica em `~/.config/azura/config.toml` com permissão `600` e nunca sai para outro host
-  além do `dev.azure.com` / `vsrm.dev.azure.com` da sua organização.
+- **`azura --dry-run`** — no writes are sent; every action just describes the request it would make.
+  A good way to explore the app risk-free.
+- Complete, abandon, queue, cancel, approve, reject and deploy **always** ask for confirmation
+  naming the target. Approving a PR (which is reversible) goes straight through.
+- The token lives in `~/.config/azura/config.toml` with mode `600` and never leaves for any host
+  other than your organization's `dev.azure.com` / `vsrm.dev.azure.com`.
 
-## Configuração
+## Configuration
 
 ```toml
 # ~/.config/azura/config.toml
@@ -100,25 +101,33 @@ project = "Fabrikam"
 pat     = "..."
 ```
 
-As variáveis `AZDO_ORG`, `AZDO_PROJECT` e `AZDO_PAT` (ou `AZURE_DEVOPS_EXT_PAT`) sobrescrevem o
-arquivo — útil em scripts. No lugar de um PAT também funciona um bearer do `az`:
+`AZDO_ORG`, `AZDO_PROJECT` and `AZDO_PAT` (or `AZURE_DEVOPS_EXT_PAT`) override the file — handy in
+scripts. Instead of a PAT you can also pass a bearer token from the Azure CLI:
 
 ```sh
 export AZDO_PAT=$(az account get-access-token \
   --scope 499b84ac-1321-427f-aa17-267ca6975798/.default --query accessToken -o tsv)
 ```
 
-## Desenvolvimento
+That GUID is not a secret and is not yours: it is Microsoft's public Application ID for Azure DevOps
+in Entra ID, identical in every tenant. Azure DevOps has no friendly resource alias, so it is the only
+way to tell `az` which resource the token is for. Such a token expires in about an hour, which is why
+a PAT is the better default.
+
+## Development
 
 ```sh
-cargo test                                  # unitários + render de todas as telas
-cargo test -- --ignored --nocapture         # smoke test contra a sua org real
-cargo test shot -- --ignored                # regera os SVGs do README
+cargo test                                  # unit tests + every screen rendered
+cargo test -- --ignored --nocapture         # smoke tests against your real organization
+cargo test shot -- --ignored                # regenerate the README SVGs
 ```
 
-Os testes de render desenham as 5 telas × 3 abas × 3 modais em 4 tamanhos de terminal,
-incluindo 8×3 — é onde as contas de layout estouram.
+The render tests draw 5 screens × 3 tabs × 3 modals at 4 terminal sizes, including 8×3 —
+that is where layout arithmetic overflows.
 
-## Licença
+The screenshots come out of the real ratatui buffer with fake data, so they cannot drift
+away from the actual UI.
+
+## License
 
 MIT

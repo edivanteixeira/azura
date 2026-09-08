@@ -10,7 +10,7 @@ use ratatui::style::{Color, Style, Stylize};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, BorderType, Paragraph};
 
-const FIELDS: [&str; 3] = ["organização", "projeto", "personal access token"];
+const FIELDS: [&str; 3] = ["organization", "project", "personal access token"];
 
 struct Form {
     values: [String; 3],
@@ -63,10 +63,10 @@ pub async fn run(terminal: &mut DefaultTerminal, cfg: Config) -> Result<Option<C
             KeyCode::Enter => {
                 if let Some(i) = form.values.iter().position(|v| v.trim().is_empty()) {
                     form.field = i;
-                    form.msg = format!("falta preencher: {}", FIELDS[i]);
+                    form.msg = format!("still empty: {}", FIELDS[i]);
                     form.is_err = true;
                 } else {
-                    form.msg = "verificando…".into();
+                    form.msg = "checking…".into();
                     form.is_err = false;
                     terminal.draw(|f| draw(f.area(), f, &form))?;
 
@@ -99,9 +99,9 @@ pub async fn run(terminal: &mut DefaultTerminal, cfg: Config) -> Result<Option<C
 
 fn friendly(err: &str) -> String {
     if err.contains("401") || err.contains("203") {
-        "token recusado — confira o PAT e os escopos".into()
+        "token refused — check the PAT and its scopes".into()
     } else if err.contains("404") {
-        "organização ou projeto não encontrado".into()
+        "organization or project not found".into()
     } else {
         err.chars().take(90).collect()
     }
@@ -119,7 +119,7 @@ fn draw(area: Rect, f: &mut ratatui::Frame, form: &Form) {
 
     let mut lines = vec![
         Line::from(Span::styled(
-            "  gerencie PRs, pipelines e releases do Azure DevOps no terminal",
+            "  manage Azure DevOps pull requests, pipelines and releases from the terminal",
             Style::new().fg(DIM),
         )),
         Line::from(""),
@@ -151,11 +151,11 @@ fn draw(area: Rect, f: &mut ratatui::Frame, form: &Form) {
     lines.extend([
         Line::from(""),
         Line::from(Span::styled(
-            "  o PAT sai de  Azure DevOps → User settings → Personal access tokens",
+            "  get a PAT from  Azure DevOps → User settings → Personal access tokens",
             Style::new().fg(DIM),
         )),
         Line::from(Span::styled(
-            "  escopos: Code (read & write) · Build (read & execute)",
+            "  scopes: Code (read & write) · Build (read & execute)",
             Style::new().fg(DIM),
         )),
         Line::from(Span::styled(
@@ -164,17 +164,17 @@ fn draw(area: Rect, f: &mut ratatui::Frame, form: &Form) {
         )),
         Line::from(""),
         Line::from(Span::styled(
-            format!("  salvo em {}  (permissão 600)", config::path().display()),
+            format!("  saved to {}  (mode 600)", config::path().display()),
             Style::new().fg(DIM),
         )),
         Line::from(""),
         Line::from(vec![
             Span::styled("  tab", Style::new().fg(ACCENT)),
-            Span::styled(" troca de campo   ", Style::new().fg(DIM)),
+            Span::styled(" next field   ", Style::new().fg(DIM)),
             Span::styled("enter", Style::new().fg(ACCENT)),
-            Span::styled(" valida e salva   ", Style::new().fg(DIM)),
+            Span::styled(" validate and save   ", Style::new().fg(DIM)),
             Span::styled("esc", Style::new().fg(ACCENT)),
-            Span::styled(" sai", Style::new().fg(DIM)),
+            Span::styled(" quit", Style::new().fg(DIM)),
         ]),
     ]);
 
@@ -190,7 +190,7 @@ fn draw(area: Rect, f: &mut ratatui::Frame, form: &Form) {
             Block::bordered()
                 .border_type(BorderType::Rounded)
                 .border_style(Style::new().fg(if form.is_err { BAD } else { BORDER }))
-                .title(Line::from(" azura · configuração ").fg(PEND).bold()),
+                .title(Line::from(" azura · setup ").fg(PEND).bold()),
         ),
         rect,
     );

@@ -44,13 +44,13 @@ pub fn diff_lines(old: &str, new: &str) -> Vec<DiffLine> {
     if old == new {
         return vec![DiffLine {
             kind: 'i',
-            text: "(sem alterações de conteúdo)".into(),
+            text: "(no content changes)".into(),
         }];
     }
     if old.contains('\0') || new.contains('\0') {
         return vec![DiffLine {
             kind: 'i',
-            text: "(arquivo binário)".into(),
+            text: "(binary file)".into(),
         }];
     }
     let diff = TextDiff::from_lines(old, new);
@@ -75,7 +75,7 @@ pub fn diff_lines(old: &str, new: &str) -> Vec<DiffLine> {
     if out.is_empty() {
         out.push(DiffLine {
             kind: 'i',
-            text: "(sem alterações)".into(),
+            text: "(no changes)".into(),
         });
     }
     out
@@ -262,9 +262,9 @@ impl App {
             quit: false,
         };
         app.status = if app.client.dry_run {
-            "--dry-run: nenhuma escrita será enviada".into()
+            "--dry-run: no writes will be sent".into()
         } else {
-            "carregando…".into()
+            "loading…".into()
         };
         app.go(|c| async move { c.my_id().await }, Msg::Me);
         app.refresh_all();
@@ -368,7 +368,7 @@ impl App {
             .enumerate()
             .filter(|(_, a)| {
                 self.matches(&format!(
-                    "{} {} {} aprovacao aprovação pendente",
+                    "{} {} {} approval pending",
                     a.release_definition.name, a.release_environment.name, a.release.name
                 ))
             })
@@ -510,7 +510,7 @@ impl App {
         let deleted = ch.change_type.contains("delete");
         self.diff = vec![DiffLine {
             kind: 'i',
-            text: "carregando…".into(),
+            text: "loading…".into(),
         }];
         self.go(
             move |c| async move {
@@ -588,7 +588,7 @@ impl App {
             "xdg-open"
         };
         let _ = std::process::Command::new(cmd).arg(&url).spawn();
-        self.status = format!("abrindo {url}");
+        self.status = format!("opening {url}");
         self.is_err = false;
     }
 
@@ -684,7 +684,7 @@ impl App {
                         format!("refs/heads/{branch}")
                     };
                     self.confirm(
-                        "Disparar pipeline",
+                        "Run pipeline",
                         vec![name.clone(), format!("branch {branch_ref}")],
                         Action::RunBuild(id, name, branch_ref),
                     );
@@ -705,8 +705,8 @@ impl App {
                     let label = labels[*sel].clone();
                     self.modal = None;
                     self.confirm(
-                        "Deploy de stage",
-                        vec![label, "Isso inicia um deploy real.".into()],
+                        "Stage deploy",
+                        vec![label, "This starts a real deploy.".into()],
                         a,
                     );
                 }
@@ -780,21 +780,21 @@ impl App {
             }
             KeyCode::Char('a') => self.run(Action::Vote(repo, id, 10)),
             KeyCode::Char('x') => self.confirm(
-                "Rejeitar PR",
+                "Reject PR",
                 vec![format!("!{id} {title}")],
                 Action::Vote(repo, id, -10),
             ),
             KeyCode::Char('w') => self.run(Action::Vote(repo, id, -5)),
             KeyCode::Char('c') => self.confirm(
-                "Completar PR (merge)",
+                "Complete PR (merge)",
                 vec![
                     format!("!{id} {title}"),
-                    format!("repo {repo_name} · branch de origem será deletada"),
+                    format!("repo {repo_name} · source branch will be deleted"),
                 ],
                 Action::CompletePr(repo, id, sha),
             ),
             KeyCode::Char('D') => self.confirm(
-                "Abandonar PR",
+                "Abandon PR",
                 vec![format!("!{id} {title}")],
                 Action::AbandonPr(repo, id),
             ),
@@ -846,7 +846,7 @@ impl App {
                     .filter(|_| !self.show_defs)
                     .unwrap_or_else(|| "master".into());
                 self.modal = Some(Modal::Input {
-                    title: format!("Disparar {name} na branch:"),
+                    title: format!("Run {name} on branch:"),
                     value: branch,
                     def: (id, name),
                 });
@@ -855,12 +855,12 @@ impl App {
                 if let Some(b) = self.sel_build() {
                     let (id, name) = (b.id, b.definition.name.clone());
                     if b.status == "completed" {
-                        self.status = "build já terminou".into();
+                        self.status = "build already finished".into();
                         self.is_err = true;
                         return;
                     }
                     self.confirm(
-                        "Cancelar build",
+                        "Cancel run",
                         vec![format!("{name} #{id}")],
                         Action::CancelBuild(id),
                     );
@@ -913,7 +913,7 @@ impl App {
             (RelRow::Approval(i), KeyCode::Char('a')) => {
                 let a = &self.approvals[i];
                 self.confirm(
-                    "Aprovar deploy",
+                    "Approve deploy",
                     vec![
                         format!(
                             "{} → stage {}",
@@ -927,7 +927,7 @@ impl App {
             (RelRow::Approval(i), KeyCode::Char('x')) => {
                 let a = &self.approvals[i];
                 self.confirm(
-                    "Rejeitar deploy",
+                    "Reject deploy",
                     vec![format!(
                         "{} → stage {}",
                         a.release_definition.name, a.release_environment.name
@@ -962,7 +962,7 @@ impl App {
                     .map(|(e, l)| Action::Deploy(r.id, e.id, l.clone()))
                     .collect();
                 self.modal = Some(Modal::Select {
-                    title: format!("Deploy de {} para qual stage?", r.name),
+                    title: format!("Deploy {} to which stage?", r.name),
                     labels,
                     actions,
                     sel: 0,
@@ -1041,7 +1041,7 @@ impl App {
                     return;
                 };
                 let Some(log) = rec.log_id() else {
-                    self.status = "esse passo não tem log".into();
+                    self.status = "this step has no log".into();
                     self.is_err = true;
                     return;
                 };
@@ -1107,7 +1107,7 @@ mod tests {
         // sem mudança
         assert_eq!(diff_lines("a\n", "a\n")[0].kind, 'i');
         // binário
-        assert_eq!(diff_lines("a", "\0b")[0].text, "(arquivo binário)");
+        assert_eq!(diff_lines("a", "\0b")[0].text, "(binary file)");
     }
 
     #[test]

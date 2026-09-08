@@ -256,9 +256,9 @@ impl Client {
         let status = r.status();
         let body = r.text().await?;
         if !status.is_success() {
-            return Err(anyhow!("{status} em {url}: {}", snippet(&body)));
+            return Err(anyhow!("{status} at {url}: {}", snippet(&body)));
         }
-        serde_json::from_str(&body).map_err(|e| anyhow!("resposta inesperada de {url}: {e}"))
+        serde_json::from_str(&body).map_err(|e| anyhow!("unexpected response from {url}: {e}"))
     }
 
     async fn list<T: DeserializeOwned>(&self, url: &str, q: &[(&str, &str)]) -> Result<Vec<T>> {
@@ -274,7 +274,7 @@ impl Client {
         let status = r.status();
         let body = r.text().await?;
         if !status.is_success() {
-            return Err(anyhow!("{status} em {url}: {}", snippet(&body)));
+            return Err(anyhow!("{status} at {url}: {}", snippet(&body)));
         }
         Ok(body)
     }
@@ -377,10 +377,10 @@ impl Client {
 
     pub async fn vote(&self, repo: &str, pr: i64, reviewer: &str, vote: i32) -> Result<String> {
         let label = match vote {
-            10 => "aprovado",
-            -5 => "marcado como aguardando autor",
-            -10 => "rejeitado",
-            _ => "voto limpo",
+            10 => "approved",
+            -5 => "marked as waiting for author",
+            -10 => "rejected",
+            _ => "vote cleared",
         };
         self.write(
             reqwest::Method::PUT,
@@ -405,7 +405,7 @@ impl Client {
                 "lastMergeSourceCommit": { "commitId": source_commit },
                 "completionOptions": { "deleteSourceBranch": true, "transitionWorkItems": true }
             }),
-            format!("PR !{pr} completado"),
+            format!("PR !{pr} completed"),
         )
         .await
     }
@@ -416,7 +416,7 @@ impl Client {
             &format!("{}/git/repositories/{repo}/pullrequests/{pr}", self.core),
             &[],
             json!({ "status": "abandoned" }),
-            format!("PR !{pr} abandonado"),
+            format!("PR !{pr} abandoned"),
         )
         .await
     }
@@ -445,7 +445,7 @@ impl Client {
             &format!("{}/build/builds", self.core),
             &[],
             json!({ "definition": { "id": def }, "sourceBranch": branch }),
-            format!("{name} disparado em {branch}"),
+            format!("{name} queued on {branch}"),
         )
         .await
     }
@@ -456,7 +456,7 @@ impl Client {
             &format!("{}/build/builds/{id}", self.core),
             &[],
             json!({ "status": "cancelling" }),
-            format!("build {id} cancelado"),
+            format!("build {id} cancelled"),
         )
         .await
     }
@@ -495,7 +495,7 @@ impl Client {
             &format!("{}/release/approvals/{id}", self.vsrm),
             &[],
             json!({ "status": status, "comments": comment }),
-            format!("aprovação {id} → {status}"),
+            format!("approval {id} → {status}"),
         )
         .await
     }
@@ -517,7 +517,7 @@ impl Client {
             ),
             &[],
             json!({ "status": "inProgress" }),
-            format!("deploy iniciado: {label}"),
+            format!("deploy started: {label}"),
         )
         .await
     }
@@ -551,7 +551,7 @@ fn live_cfg() -> crate::config::Config {
     let cfg = crate::config::Config::load();
     assert!(
         cfg.is_complete(),
-        "configure org/projeto/PAT (rode `azura setup` ou exporte AZDO_ORG/AZDO_PROJECT/AZDO_PAT)"
+        "configure org/project/PAT (run `azura setup` or export AZDO_ORG/AZDO_PROJECT/AZDO_PAT)"
     );
     cfg
 }
@@ -575,16 +575,16 @@ mod live {
 
         let me = c.my_id().await.expect("my_id");
         assert!(!me.is_empty());
-        println!("perfil          {me}");
+        println!("profile         {me}");
 
         let prs = c.pull_requests().await.expect("pull_requests");
-        println!("PRs ativos      {}", prs.len());
+        println!("active PRs      {}", prs.len());
         let builds = c.builds().await.expect("builds");
         println!("builds          {}", builds.len());
         let defs = c.definitions().await.expect("definitions");
-        println!("definições      {}", defs.len());
+        println!("definitions     {}", defs.len());
         let approvals = c.approvals().await.expect("approvals");
-        println!("aprovações      {}", approvals.len());
+        println!("approvals       {}", approvals.len());
         let releases = c.releases().await.expect("releases");
         println!("releases        {}", releases.len());
 
@@ -592,22 +592,22 @@ mod live {
         let b = &builds[0];
         assert!(
             !b.definition.name.is_empty(),
-            "definition.name não desserializou"
+            "definition.name did not deserialize"
         );
         println!(
-            "último build    {} {} {}",
+            "latest build    {} {} {}",
             b.definition.name, b.status, b.result
         );
         let tl = c.timeline(b.id).await.expect("timeline");
-        assert!(!tl.is_empty(), "timeline vazia");
+        assert!(!tl.is_empty(), "empty timeline");
         println!(
-            "passos          {} (com log: {})",
+            "steps           {} (with log: {})",
             tl.len(),
             tl.iter().filter(|r| r.log_id().is_some()).count()
         );
         if let Some(r) = tl.iter().find(|r| r.log_id().is_some()) {
             let log = c.log(b.id, r.log_id().unwrap()).await.expect("log");
-            println!("log de '{}'   {} linhas", r.name, log.lines().count());
+            println!("log of '{}'   {} lines", r.name, log.lines().count());
         }
 
         for a in &approvals {
@@ -630,14 +630,14 @@ mod live {
             .expect("pr detail");
         assert!(
             !full.last_merge_source_commit.commit_id.is_empty(),
-            "sem merge commits"
+            "no merge commits"
         );
         let changes = c
             .pr_changes(&full.repo_id(), full.pull_request_id)
             .await
             .expect("changes");
         println!(
-            "PR !{}          {} arquivos",
+            "PR !{}          {} files",
             full.pull_request_id,
             changes.len()
         );
@@ -663,7 +663,7 @@ mod live {
         println!("{}  {} → {} bytes", ch.item.path, old.len(), new.len());
         assert!(
             !old.is_empty() || !new.is_empty(),
-            "nenhum dos lados retornou conteúdo"
+            "neither side returned content"
         );
 
         // escrita em dry-run não sai da máquina
@@ -720,7 +720,7 @@ mod live_filtro {
             let (n, _) = check(Tab::Prs, &branch);
             assert!(
                 n > 0,
-                "filtro não achou a branch '{branch}' que veio da API"
+                "filter did not find branch '{branch}' that came from the API"
             );
         }
 
@@ -730,7 +730,7 @@ mod live_filtro {
         }
         if !nome.is_empty() {
             let (n, total) = check(Tab::Pipelines, &nome);
-            assert!(n > 0 && n <= total, "filtro não achou a pipeline '{nome}'");
+            assert!(n > 0 && n <= total, "filter did not find pipeline '{nome}'");
         }
 
         println!("releases:");

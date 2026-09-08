@@ -57,7 +57,7 @@ impl Config {
             std::fs::create_dir_all(dir)?;
         }
         std::fs::write(&p, toml::to_string_pretty(self)?)
-            .with_context(|| format!("não consegui escrever {}", p.display()))?;
+            .with_context(|| format!("could not write {}", p.display()))?;
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;
