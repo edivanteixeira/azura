@@ -338,3 +338,76 @@ async fn resposta_vazia_nao_e_enviada() {
         "enter sem texto não deve postar comentário vazio"
     );
 }
+
+#[tokio::test]
+async fn r_escolhe_o_repo() {
+    let (mut app, _rx) = app_pronto().await;
+    assert_eq!(app.repos(), vec!["api".to_string(), "web".to_string()]);
+
+    let r = KeyEvent::new(KeyCode::Char('R'), KeyModifiers::SHIFT);
+    let enter = KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE);
+
+    app.on_key(r);
+    let t = tela(&app);
+    assert!(t.contains("Show pull requests from"), "seletor abre:\n{t}");
+    assert!(
+        t.contains("all repos (2)"),
+        "opção de limpar o filtro:\n{t}"
+    );
+    assert!(
+        t.contains("api (1)") && t.contains("web (1)"),
+        "repos com contagem:\n{t}"
+    );
+
+    // primeira opção é "todos"; desce uma e escolhe o primeiro repo
+    app.on_key(tecla('j'));
+    app.on_key(enter);
+    let t = tela(&app);
+    assert!(
+        t.contains("· api"),
+        "repo escolhido vai para o título:\n{t}"
+    );
+    assert!(
+        t.contains("drop the legacy") && !t.contains("add retry"),
+        "{t}"
+    );
+
+    // reabrir já vem posicionado no repo atual, não no topo
+    app.on_key(r);
+    app.on_key(enter);
+    assert_eq!(
+        app.repo_filter.as_deref(),
+        Some("api"),
+        "reabrir e confirmar mantém o repo atual"
+    );
+
+    // subir até "all repos" limpa o filtro
+    app.on_key(r);
+    app.on_key(tecla('k'));
+    app.on_key(enter);
+    assert!(
+        app.repo_filter.is_none(),
+        "escolher 'all repos' limpa o filtro"
+    );
+    let t = tela(&app);
+    assert!(
+        t.contains("add retry") && t.contains("drop the legacy"),
+        "{t}"
+    );
+}
+
+#[tokio::test]
+async fn repo_e_escopo_se_combinam() {
+    let (mut app, _rx) = app_pronto().await;
+    app.on_key(KeyEvent::new(KeyCode::Char('R'), KeyModifiers::SHIFT));
+    app.on_key(tecla('j'));
+    app.on_key(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
+    // repo api + escopo "abertos por mim": o PR do api é de outra pessoa
+    app.on_key(tecla('m'));
+    assert_eq!(app.scope, PrScope::Mine);
+    let t = tela(&app);
+    assert!(
+        t.contains("no pull requests in this repo"),
+        "os dois filtros somam:\n{t}"
+    );
+}

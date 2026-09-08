@@ -229,6 +229,7 @@ pub enum Action {
     Approval(i64, bool),
     Deploy(i64, i64, String),
     Reply(String, i64, i64, String),
+    FilterRepo(Option<String>),
 }
 
 /// O que fazer com o texto digitado num Modal::Input.
@@ -256,6 +257,8 @@ pub enum Modal {
         labels: Vec<String>,
         actions: Vec<Action>,
         sel: usize,
+        /// deploy pede confirmação; escolher um repo não
+        confirm: bool,
     },
 }
 
@@ -306,6 +309,7 @@ pub struct App {
     pub my_id: String,
     pub loaded: [bool; 3],
     pub scope: PrScope,
+    pub repo_filter: Option<String>,
 
     pub filter: String,
     pub typing_filter: bool,
@@ -366,6 +370,7 @@ impl App {
             my_id: String::new(),
             loaded: [false; 3],
             scope: PrScope::All,
+            repo_filter: None,
             filter: String::new(),
             typing_filter: false,
             gates: std::collections::HashMap::new(),
@@ -496,6 +501,62 @@ impl App {
         self.filter.is_empty() || hay.to_lowercase().contains(&self.filter.to_lowercase())
     }
 
+    /// Repos que aparecem nos PRs carregados, para o ciclo do filtro.
+    pub fn repos(&self) -> Vec<String> {
+        let mut v: Vec<String> = self
+            .prs
+            .iter()
+            .map(|p| p.repository.name.clone())
+            .filter(|n| !n.is_empty())
+            .collect();
+        v.sort_by_key(|n| n.to_lowercase());
+        v.dedup();
+        v
+    }
+
+    /// Seletor de repo, ordenado por quantidade de PR: com dez repos abertos,
+    /// ciclar até o que interessa custa nove teclas.
+    fn pick_repo(&mut self) {
+        let mut contagem: Vec<(String, usize)> = self
+            .repos()
+            .into_iter()
+            .map(|r| {
+                let n = self.prs.iter().filter(|p| p.repository.name == r).count();
+                (r, n)
+            })
+            .collect();
+        if contagem.is_empty() {
+            return;
+        }
+        contagem.sort_by(|a, b| {
+            b.1.cmp(&a.1)
+                .then(a.0.to_lowercase().cmp(&b.0.to_lowercase()))
+        });
+
+        let mut labels = vec![format!("all repos ({})", self.prs.len())];
+        let mut actions = vec![Action::FilterRepo(None)];
+        for (r, n) in contagem {
+            labels.push(format!("{r} ({n})"));
+            actions.push(Action::FilterRepo(Some(r)));
+        }
+        let sel = self
+            .repo_filter
+            .as_ref()
+            .and_then(|atual| {
+                labels
+                    .iter()
+                    .position(|l| l.starts_with(&format!("{atual} (")))
+            })
+            .unwrap_or(0);
+        self.modal = Some(Modal::Select {
+            title: "Show pull requests from:".into(),
+            labels,
+            actions,
+            sel,
+            confirm: false,
+        });
+    }
+
     pub fn visible_prs(&self) -> Vec<usize> {
         self.prs
             .iter()
@@ -513,7 +574,12 @@ impl App {
                                 .any(|r| r.id == self.my_id && r.vote == 0)
                     }
                 };
+                let no_repo = self
+                    .repo_filter
+                    .as_ref()
+                    .is_none_or(|r| &p.repository.name == r);
                 no_escopo
+                    && no_repo
                     && self.matches(&format!(
                         "{} {} {} {} {} {} {}",
                         p.title,
@@ -757,6 +823,10 @@ impl App {
 
     fn run(&mut self, action: Action) {
         match action {
+            Action::FilterRepo(r) => {
+                self.repo_filter = r;
+                self.sel[0] = 0;
+            }
             Action::Vote(repo, pr, v) => {
                 let me = self.my_id.clone();
                 self.go(
@@ -932,6 +1002,7 @@ impl App {
                 labels,
                 actions,
                 sel,
+                confirm,
                 ..
             }) => match k.code {
                 KeyCode::Char('j') | KeyCode::Down => *sel = (*sel + 1).min(labels.len() - 1),
@@ -939,12 +1010,17 @@ impl App {
                 KeyCode::Enter => {
                     let a = actions[*sel].clone();
                     let label = labels[*sel].clone();
+                    let precisa_confirmar = *confirm;
                     self.modal = None;
-                    self.confirm(
-                        "Stage deploy",
-                        vec![label, "This starts a real deploy.".into()],
-                        a,
-                    );
+                    if precisa_confirmar {
+                        self.confirm(
+                            "Stage deploy",
+                            vec![label, "This starts a real deploy.".into()],
+                            a,
+                        );
+                    } else {
+                        self.run(a);
+                    }
                 }
                 _ => self.modal = None,
             },
@@ -1010,6 +1086,10 @@ impl App {
     fn pr_key(&mut self, k: KeyEvent) {
         // 'm' tem que funcionar com a lista vazia: senão, ligar o filtro sem
         // resultado deixa a tela sem nenhum PR selecionado e sem como desligar
+        if k.code == KeyCode::Char('R') {
+            self.pick_repo();
+            return;
+        }
         if k.code == KeyCode::Char('m') {
             self.scope = self.scope.next();
             self.sel[0] = 0;
@@ -1211,6 +1291,7 @@ impl App {
                     labels,
                     actions,
                     sel: 0,
+                    confirm: true,
                 });
             }
             _ => {}

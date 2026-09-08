@@ -190,6 +190,8 @@ fn table(
         // filtrada e vazia ficava dizendo "loading…" para sempre
         let msg = if !app.filter.is_empty() {
             "nothing matches the filter · esc clears"
+        } else if app.tab == Tab::Prs && app.repo_filter.is_some() {
+            "no pull requests in this repo · R picks another"
         } else if app.tab == Tab::Prs && app.scope != PrScope::All {
             app.scope.empty_msg()
         } else if app.loading > 0 {
@@ -277,7 +279,11 @@ fn prs(f: &mut Frame, area: Rect, app: &App) {
         Constraint::Length(7),
         Constraint::Length(4),
     ];
-    table(f, area, app, app.scope.title(), head, widths, rows);
+    let title = match &app.repo_filter {
+        Some(r) => format!("{} · {r}", app.scope.title()),
+        None => app.scope.title().to_string(),
+    };
+    table(f, area, app, &title, head, widths, rows);
 }
 
 fn pipelines(f: &mut Frame, area: Rect, app: &App) {
@@ -635,7 +641,8 @@ fn help(f: &mut Frame, area: Rect) {
         g("c", "complete merge · confirms"),
         g("D", "abandon · confirms"),
         g("m", "cycle scope: all / mine / to review"),
-        g("t", "comment threads · R replies"),
+        g("t", "comment threads"),
+        g("R", "pick which repo to show"),
         Line::from(""),
         Line::from(Span::styled("  pipelines", Style::new().bold())),
         g("p", "toggle runs / definitions"),
@@ -646,6 +653,9 @@ fn help(f: &mut Frame, area: Rect) {
         Line::from(Span::styled("  releases", Style::new().bold())),
         g("a x", "approve / reject · confirms"),
         g("d", "deploy a stage · confirms"),
+        Line::from(""),
+        Line::from(Span::styled("  comment threads", Style::new().bold())),
+        g("R", "reply on the selected thread"),
         Line::from(""),
         Line::from(Span::styled("  columns", Style::new().bold())),
         g("blocked on", "what the branch policies still want"),
@@ -697,6 +707,7 @@ fn key_bar(f: &mut Frame, area: Rect, app: &App) {
                 ("enter", "diff"),
                 ("t", "comments"),
                 ("m", "scope"),
+                ("R", "repo"),
                 ("o", "browser"),
                 ("?", "keys"),
             ],
@@ -927,6 +938,7 @@ mod tests {
                     labels: vec!["a".into()],
                     actions: vec![Action::CancelBuild(1)],
                     sel: 0,
+                    confirm: true,
                 },
             ] {
                 app.modal = Some(m);

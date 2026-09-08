@@ -86,13 +86,16 @@ No local clone needed: the changed files and both sides of the diff come from th
 | `r` | refresh (automatic every 30s) |
 | `o` `enter` | open in browser · detail |
 | **PRs** | `a` approve · `w` waiting for author · `x` reject · `c` complete · `D` abandon · `enter` diff · `t` comments |
-| **PR scope** | `m` cycles: all → opened by me → waiting for my review |
+| **PR scope** | `m` cycles: all → opened by me → waiting for my review · `R` picks a repo |
 | **Pipelines** | `enter` steps · `l` log of the failed step · `R` run · `x` cancel · `p` definitions |
 | **Releases** | `a` approve · `x` reject · `d` deploy a stage |
 | **Diff and log** | `J/K` switch file · `j/k` scroll · `/` `n` search |
 
 The filter matches everything on screen — title, repo, author, branch, state, stages.
 `/failed` shows only what broke, `/conflicts` only PRs with merge conflicts, `/production` only production.
+
+`R` narrows the PR list to one repository, listing them by how many open pull requests
+each has, so the busy ones are one keystroke away. It stacks with `m` and with `/`.
 
 ## Safety
 
